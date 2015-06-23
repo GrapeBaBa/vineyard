@@ -38,6 +38,9 @@ tasks.withType(JavaCompile) {
 
 repositories {
     mavenCentral()
+    maven { url 'https://oss.jfrog.org/libs-snapshot' }
+    maven { url 'http://clinker.netty.io/nexus/content/repositories/snapshots' }
+
 }
 
 ext {
@@ -47,7 +50,8 @@ ext {
     mockitoVersion = '1.10.19'
     slf4jVersion = '1.7.12'
     logbackVersion = '1.1.3'
-    rxnettyVersion = '0.4.8'
+    rxnettyVersion = '0.5.0-SNAPSHOT'
+    nettyVersion = '5.0.0.Alpha3-SNAPSHOT'
 }
 
 dependencies {
@@ -55,7 +59,16 @@ dependencies {
             "org.slf4j:slf4j-api:$slf4jVersion",
             "org.slf4j:jcl-over-slf4j:$slf4jVersion",
             "ch.qos.logback:logback-classic:$logbackVersion",
-            "io.reactivex:rxnetty:$rxnettyVersion")
+            "io.reactivex:rxnetty:$rxnettyVersion",
+            "io.netty:netty-buffer:$nettyVersion",
+            "io.netty:netty-codec:$nettyVersion",
+            "io.netty:netty-codec-http:$nettyVersion",
+            "io.netty:netty-common:$nettyVersion",
+            "io.netty:netty-handler:$nettyVersion",
+            "io.netty:netty-resolver:$nettyVersion",
+            "io.netty:netty-transport:$nettyVersion",
+            "io.netty:netty-transport-native-epoll:$nettyVersion"
+    )
 
     testCompile("junit:junit-dep:$junitVersion",
             "org.hamcrest:hamcrest-core:$hamcrestVersion",
@@ -68,6 +81,8 @@ dependencies {
 buildscript {
     repositories {
         mavenCentral()
+        maven { url 'https://oss.jfrog.org/libs-snapshot' }
+        maven { url 'http://clinker.netty.io/nexus/content/repositories/snapshots' }
     }
 }
 
