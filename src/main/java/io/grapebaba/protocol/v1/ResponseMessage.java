@@ -1,8 +1,6 @@
 package io.grapebaba.protocol.v1;
 
-import io.grapebaba.protocol.Protocol;
-
-public class ResponseMessage implements Protocol<Header,Response> {
+public class ResponseMessage extends ProtocolMessage<Header, Response> {
     @Override
     public Header header() {
         return null;

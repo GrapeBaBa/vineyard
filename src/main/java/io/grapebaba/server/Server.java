@@ -10,6 +10,6 @@ public class Server {
             TcpServer.newServer(8076)
                     .pipelineConfigurator(channelPipeline -> {
                         channelPipeline.addLast(ProtocolsCodec.class.getName(), new ProtocolsCodec());
-                        channelPipeline.addLast(new ServerHandler());
+                        channelPipeline.addLast(new ServersHandler());
                     });
 }

@@ -1,14 +1,10 @@
 package io.grapebaba.server;
 
-import io.grapebaba.ProtocolHandler;
 import io.grapebaba.protocol.Protocol;
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.SimpleChannelInboundHandler;
 
-public class ServerHandler extends ProtocolHandler {
-    private static final ServiceRegistry registry = new ServiceRegistry();
+public interface ServerHandler<P extends Protocol> {
 
-    @Override
-    protected void messageReceived(ChannelHandlerContext ctx, Protocol msg) throws Exception {
-
-    }
+    P handle(P protocol);
 }

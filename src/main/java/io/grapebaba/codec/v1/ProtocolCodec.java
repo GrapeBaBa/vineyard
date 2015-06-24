@@ -1,48 +1,46 @@
 package io.grapebaba.codec.v1;
 
-import io.grapebaba.protocol.Protocol;
+import io.grapebaba.protocol.v1.ProtocolMessage;
 import io.grapebaba.protocol.v1.RequestMessage;
+import io.grapebaba.protocol.v1.ResponseMessage;
 import io.netty.buffer.ByteBuf;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.handler.codec.ByteToMessageCodec;
 
-import java.util.List;
-
-public class ProtocolCodec extends ByteToMessageCodec<Protocol> {
+@io.grapebaba.annotation.ProtocolCodec(ProtocolMessage.MAGIC_NUMBER)
+public class ProtocolCodec implements io.grapebaba.protocol.ProtocolCodec<ProtocolMessage> {
 
     @Override
-    protected void encode(ChannelHandlerContext ctx, Protocol msg, ByteBuf out) throws Exception {
-
+    public ProtocolMessage decode(ByteBuf byteBuf) {
+        return null;
     }
 
     @Override
-    protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {
-
+    public ByteBuf encode(ProtocolMessage protocol) {
+        return null;
     }
 
-    class RequestMessageCodec extends ByteToMessageCodec<RequestMessage> {
+    class RequestMessageCodec implements io.grapebaba.protocol.ProtocolCodec<RequestMessage> {
 
         @Override
-        protected void encode(ChannelHandlerContext ctx, RequestMessage msg, ByteBuf out) throws Exception {
-
+        public RequestMessage decode(ByteBuf byteBuf) {
+            return null;
         }
 
         @Override
-        protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {
-
+        public ByteBuf encode(RequestMessage protocol) {
+            return null;
         }
     }
 
-    class ResponseMessageCodec extends ByteToMessageCodec<ResponseMessageCodec> {
+    class ResponseMessageCodec implements io.grapebaba.protocol.ProtocolCodec<ResponseMessage> {
 
         @Override
-        protected void encode(ChannelHandlerContext ctx, ResponseMessageCodec msg, ByteBuf out) throws Exception {
-
+        public ResponseMessage decode(ByteBuf byteBuf) {
+            return null;
         }
 
         @Override
-        protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {
-
+        public ByteBuf encode(ResponseMessage protocol) {
+            return null;
         }
     }
 }

@@ -49,11 +49,6 @@ public class Header implements io.grapebaba.protocol.Header {
                 .toString();
     }
 
-    @Override
-    public int length() {
-        return 0;
-    }
-
     public static class HeaderV1Builder {
         private Header header;
 
