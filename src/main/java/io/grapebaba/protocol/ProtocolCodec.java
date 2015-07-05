@@ -2,9 +2,12 @@ package io.grapebaba.protocol;
 
 import io.netty.buffer.ByteBuf;
 
+import java.util.List;
+
+
 public interface ProtocolCodec<P extends Protocol> {
 
-    P decode(ByteBuf byteBuf);
+  void decode(ByteBuf byteBuf, List<Object> out);
 
-    ByteBuf encode(P protocol);
+  void encode(P protocol, ByteBuf out);
 }

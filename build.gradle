@@ -1,10 +1,10 @@
 apply plugin: 'idea'
 apply plugin: 'eclipse'
 apply plugin: 'java'
-// apply plugin: 'checkstyle'
+apply plugin: 'checkstyle'
 apply plugin: 'findbugs'
-apply plugin: 'jdepend'
-apply plugin: 'pmd'
+//apply plugin: 'jdepend'
+//apply plugin: 'pmd'
 
 idea {
     project {
@@ -19,7 +19,9 @@ idea {
     }
 
     workspace.iws.withXml { provider ->
-        def junitDefaults = provider.node.component.find { it.@name == 'RunManager' }.configuration.find {
+        def junitDefaults = provider.node.component.find {
+            it.@name == 'RunManager'
+        }.configuration.find {
             it.@type == 'JUnit'
         }
         junitDefaults.option.find { it.@name == 'WORKING_DIRECTORY' }.@value = '$MODULE_DIR$'
@@ -97,7 +99,7 @@ task wrapper(type: Wrapper) {
     gradleVersion = '2.2.1'
 }
 
-//   checkstyle {
-//      configFile = file("$rootProject.projectDir/config/checkstyle/sun_checks.xml")
-//      toolVersion = '6.0'
-//  }
+checkstyle {
+    configFile = file("$rootProject.projectDir/config/checkstyle/google_checks.xml")
+    toolVersion = '6.7'
+}

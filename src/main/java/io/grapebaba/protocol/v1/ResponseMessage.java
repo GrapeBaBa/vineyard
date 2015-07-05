@@ -1,13 +1,13 @@
 package io.grapebaba.protocol.v1;
 
-public class ResponseMessage extends ProtocolMessage<Header, Response> {
-    @Override
-    public Header header() {
-        return null;
-    }
+public class ResponseMessage extends ProtocolMessage<DefaultProtocolV1Header, Response> {
+  @Override
+  public DefaultProtocolV1Header header() {
+    return null;
+  }
 
-    @Override
-    public Response body() {
-        return null;
-    }
+  @Override
+  public Response body() {
+    return null;
+  }
 }
