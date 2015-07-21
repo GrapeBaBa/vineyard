@@ -11,7 +11,7 @@ import java.lang.annotation.Target;
 @Documented
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface ProtocolCodec {
+public @interface ProtocolCodecProvider {
   /**
    * Set protocol magic number for registry codec.
    */

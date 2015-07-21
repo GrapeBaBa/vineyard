@@ -54,6 +54,9 @@ ext {
     logbackVersion = '1.1.3'
     rxnettyVersion = '0.5.0-SNAPSHOT'
     nettyVersion = '5.0.0.Alpha3-SNAPSHOT'
+    kryoVersion = '3.0.2'
+    kryoSerializerVersion = '0.33'
+    fstVersion = '2.33'
 }
 
 dependencies {
@@ -69,7 +72,10 @@ dependencies {
             "io.netty:netty-handler:$nettyVersion",
             "io.netty:netty-resolver:$nettyVersion",
             "io.netty:netty-transport:$nettyVersion",
-            "io.netty:netty-transport-native-epoll:$nettyVersion"
+            "io.netty:netty-transport-native-epoll:$nettyVersion",
+            "com.esotericsoftware:kryo:$kryoVersion",
+            "de.javakaffee:kryo-serializers:$kryoSerializerVersion",
+            "de.ruedigermoeller:fst:$fstVersion"
     )
 
     testCompile("junit:junit-dep:$junitVersion",

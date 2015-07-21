@@ -3,7 +3,7 @@ package io.grapebaba;
 import com.google.common.collect.Maps;
 import com.google.common.reflect.ClassPath;
 
-import io.grapebaba.annotation.ProtocolCodec;
+import io.grapebaba.annotation.ProtocolCodecProvider;
 import io.grapebaba.protocol.Protocol;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
@@ -30,11 +30,11 @@ public class ProtocolsCodec extends MessageToMessageCodec<ByteBuf, Protocol> {
           .getAllClasses()
           .stream()
           .map(ClassPath.ClassInfo::load)
-          .filter(clazz -> clazz.isAnnotationPresent(ProtocolCodec.class))
+          .filter(clazz -> clazz.isAnnotationPresent(ProtocolCodecProvider.class))
           .forEach(
               clazz -> {
               try {
-                registry.put(clazz.getAnnotation(ProtocolCodec.class).value(),
+                registry.put(clazz.getAnnotation(ProtocolCodecProvider.class).value(),
                     (io.grapebaba.protocol.ProtocolCodec) clazz.newInstance());
               } catch (InstantiationException | IllegalAccessException e) {
                 logger.error("Register DefaultProtocolV1Codec instantiation exception", e);
