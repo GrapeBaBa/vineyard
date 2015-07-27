@@ -7,6 +7,9 @@ import io.grapebaba.protocol.Body;
 import java.util.Arrays;
 import java.util.Objects;
 
+/**
+ * Default rpc protocol request structure.
+ */
 public class Request implements Body {
   private Integer opaque;
 
@@ -18,9 +21,9 @@ public class Request implements Body {
 
   private Object[] arguments;
 
-//  public Object[] getArguments() {
-//    return arguments;
-//  }
+  public Object[] getArguments() {
+    return Arrays.copyOf(arguments, arguments.length);
+  }
 
   public String getBeanName() {
     return beanName;

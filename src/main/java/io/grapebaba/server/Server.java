@@ -6,6 +6,9 @@ import io.grapebaba.codec.packet.PacketEncoder;
 import io.grapebaba.protocol.Protocol;
 import io.reactivex.netty.protocol.tcp.server.TcpServer;
 
+/**
+ * The default rpc server.
+ */
 public class Server {
 
   private static final TcpServer<Protocol, Protocol> server = TcpServer.newServer(8076)

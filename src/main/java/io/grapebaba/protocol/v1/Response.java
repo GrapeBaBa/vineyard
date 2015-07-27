@@ -6,6 +6,9 @@ import io.grapebaba.protocol.Body;
 
 import java.util.Objects;
 
+/**
+ * Default rpc protocol response structure.
+ */
 public class Response implements Body {
 
   private Integer opaque;

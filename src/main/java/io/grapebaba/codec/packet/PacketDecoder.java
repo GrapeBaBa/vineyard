@@ -7,6 +7,9 @@ import io.netty.handler.codec.ReplayingDecoder;
 
 import java.util.List;
 
+/**
+ * Decode the data packet through content length.
+ */
 public class PacketDecoder extends ReplayingDecoder<Packet> {
 
   @Override

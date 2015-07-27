@@ -1,5 +1,8 @@
 package io.grapebaba.protocol;
 
+/**
+ * The default serializer type.
+ */
 public enum SerializerType {
   FST, KRYO;
 

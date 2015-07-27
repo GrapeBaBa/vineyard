@@ -6,8 +6,9 @@ import io.grapebaba.protocol.Header;
 
 import java.util.Objects;
 
-
-
+/**
+ * Data packet header structure.
+ */
 public class PacketHeader implements Header {
   private Integer bodyLength;
 

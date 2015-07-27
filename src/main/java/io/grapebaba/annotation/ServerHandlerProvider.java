@@ -23,11 +23,15 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * The service provider must add this annotation.
+ * The server handler must add this annotation for register.
  */
 @Inherited
 @Documented
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Service {
+public @interface ServerHandlerProvider {
+  /**
+   * Set protocol magic number for registry codec.
+   */
+  byte magicNumber();
 }

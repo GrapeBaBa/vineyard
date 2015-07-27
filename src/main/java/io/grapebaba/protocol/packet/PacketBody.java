@@ -6,6 +6,9 @@ import io.netty.buffer.ByteBuf;
 
 import java.util.Objects;
 
+/**
+ * Data packet body content.
+ */
 public class PacketBody implements io.grapebaba.protocol.Body {
   private ByteBuf bodyByteBuf;
 

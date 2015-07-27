@@ -5,6 +5,7 @@ import com.google.common.reflect.ClassPath;
 
 import io.grapebaba.annotation.ProtocolCodecProvider;
 import io.grapebaba.protocol.Protocol;
+import io.grapebaba.protocol.ProtocolCodec;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageCodec;
@@ -16,12 +17,13 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-
+/**
+ * The default protocol codec.
+ */
 public class ProtocolsCodec extends MessageToMessageCodec<ByteBuf, Protocol> {
   private static final Logger logger = LoggerFactory.getLogger(ProtocolsCodec.class);
 
-  private static final Map<Byte, ? super io.grapebaba.protocol.ProtocolCodec> registry = Maps
-      .newHashMap();
+  private static final Map<Byte, ProtocolCodec> CODEC_REGISTRY = Maps.newHashMap();
 
   static {
     try {
@@ -34,28 +36,30 @@ public class ProtocolsCodec extends MessageToMessageCodec<ByteBuf, Protocol> {
           .forEach(
               clazz -> {
               try {
-                registry.put(clazz.getAnnotation(ProtocolCodecProvider.class).value(),
-                    (io.grapebaba.protocol.ProtocolCodec) clazz.newInstance());
+                CODEC_REGISTRY.put(clazz.getAnnotation(ProtocolCodecProvider.class).magicNumber(),
+                    (ProtocolCodec) clazz.newInstance());
               } catch (InstantiationException | IllegalAccessException e) {
-                logger.error("Register DefaultProtocolV1Codec instantiation exception", e);
-                throw new RuntimeException(e);
+                logger.error("Register codec instantiation exception", e);
+                throw new RuntimeException("Register codec instantiation exception", e);
               }
             });
     } catch (IOException e) {
-      logger.error("Register DefaultProtocolV1Codec io exception", e);
-      throw new RuntimeException(e);
+      logger.error("Register codec io exception", e);
+      throw new RuntimeException("Register codec io exception", e);
     }
   }
 
   @Override
+  @SuppressWarnings({"unchecked"})
   protected void encode(ChannelHandlerContext ctx, Protocol msg, List<Object> out)
           throws Exception {
-
+    out.add(CODEC_REGISTRY.get(msg.getMagicNumber()).encode(msg));
   }
 
   @Override
-  protected void decode(ChannelHandlerContext ctx, ByteBuf msg, List<Object> out)
-          throws Exception {
-
+  protected void decode(ChannelHandlerContext ctx, ByteBuf msg, List<Object> out) throws Exception {
+    final int magicNumberPosition = 0;
+    final byte magicNumber = msg.getByte(magicNumberPosition);
+    out.add(CODEC_REGISTRY.get(magicNumber).decode(msg));
   }
 }

@@ -6,22 +6,30 @@ import com.esotericsoftware.kryo.io.Output;
 import com.esotericsoftware.kryo.pool.KryoPool;
 import com.esotericsoftware.kryo.pool.KryoPool.Builder;
 
-public class KryoSerializer implements Serializer{
+/**
+ * The serializer implemented by Kryo library.
+ */
+public class KryoSerializer implements Serializer {
   private static final KryoPool kryoPool = new Builder(() -> {
-    Kryo kryo = new Kryo();
+      Kryo kryo = new Kryo();
     // configure kryo instance, customize settings
-    return kryo;
-  }).softReferences().build();
+      return kryo;
+    }).softReferences().build();
 
+  /**
+   * Serialize the object.
+   * @param obj obj
+   * @return byte array
+   */
   public byte[] serialize(Object obj) {
     return kryoPool.run(kryo -> {
-      Output output = new Output();
-      kryo.writeClassAndObject(output, obj);
-      return output.getBuffer();
-    });
+        Output output = new Output();
+        kryo.writeClassAndObject(output, obj);
+        return output.getBuffer();
+      });
   }
 
-  public Object deserialize(byte[] bytes){
+  public Object deserialize(byte[] bytes) {
     return kryoPool.run(kryo -> kryo.readClassAndObject(new Input(bytes)));
   }
 }

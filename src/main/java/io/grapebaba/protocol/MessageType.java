@@ -1,5 +1,8 @@
 package io.grapebaba.protocol;
 
+/**
+ * The default protocol message type.
+ */
 public enum MessageType {
   REQUEST, RESPONSE, HEARTBEAT;
 

@@ -11,6 +11,10 @@ import java.util.Objects;
 
 // TODO:add rpc way property(request/response,one-way...)
 // TODO:custom protocol by set param when create client
+
+/**
+ * Default rpc protocol header.
+ */
 public class DefaultProtocolV1Header implements Header {
 
   private MessageType messageType;
