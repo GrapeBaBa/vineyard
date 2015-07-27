@@ -1,6 +1,6 @@
 package io.grapebaba.server;
 
-import io.grapebaba.ProtocolsCodec;
+import io.grapebaba.codec.ProtocolsCodec;
 import io.grapebaba.codec.packet.PacketDecoder;
 import io.grapebaba.codec.packet.PacketEncoder;
 import io.grapebaba.protocol.Protocol;

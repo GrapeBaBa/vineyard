@@ -1,9 +1,13 @@
 package io.grapebaba.server;
 
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.google.common.reflect.ClassPath;
 
 import io.grapebaba.annotation.ServerHandlerProvider;
+import io.grapebaba.config.Configuration;
+import io.grapebaba.config.ServerConfiguration;
 import io.grapebaba.protocol.Protocol;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -20,20 +24,31 @@ import java.util.Map;
 public class ServersHandler extends SimpleChannelInboundHandler<Protocol> {
   private static final Logger logger = LoggerFactory.getLogger(ServersHandler.class);
 
-  private static final Map<Byte, ServerHandler> HANDLER_REGISTRY = Maps.newHashMap();
+  private final Map<Byte, ServerHandler> handlerRegistry = Maps.newHashMap();
 
-  static {
+  /**
+   * Construct servers handler through server configuration.
+   * 
+   * @param serverConfiguration serverConfiguration
+   */
+  public ServersHandler(ServerConfiguration serverConfiguration) {
     try {
-      ClassPath
-          .from(ServersHandler.class.getClassLoader())
-          .getAllClasses()
+      ImmutableSet<ClassPath.ClassInfo> internalServerHandlers =
+          ClassPath.from(ServersHandler.class.getClassLoader()).getTopLevelClassesRecursive(
+              Configuration.INTERNAL_PACKAGE);
+
+      ImmutableSet<ClassPath.ClassInfo> customServerHandlers =
+          ClassPath.from(ServersHandler.class.getClassLoader()).getTopLevelClassesRecursive(
+              serverConfiguration.getServerHandlerPackages());
+
+      Sets.union(internalServerHandlers, customServerHandlers)
           .stream()
           .map(ClassPath.ClassInfo::load)
           .filter(clazz -> clazz.isAnnotationPresent(ServerHandlerProvider.class))
           .forEach(
               clazz -> {
               try {
-                HANDLER_REGISTRY.put(clazz.getAnnotation(ServerHandlerProvider.class)
+                handlerRegistry.put(clazz.getAnnotation(ServerHandlerProvider.class)
                       .magicNumber(), (ServerHandler) clazz.newInstance());
               } catch (InstantiationException | IllegalAccessException e) {
                 logger.error("Register ServerHandler instantiation exception", e);
@@ -49,6 +64,6 @@ public class ServersHandler extends SimpleChannelInboundHandler<Protocol> {
   @Override
   @SuppressWarnings({"unchecked"})
   protected void messageReceived(ChannelHandlerContext ctx, Protocol msg) throws Exception {
-    HANDLER_REGISTRY.get(msg.getMagicNumber()).handle(msg);
+    handlerRegistry.get(msg.getMagicNumber()).handle(msg);
   }
 }

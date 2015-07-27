@@ -6,6 +6,7 @@ import com.google.common.reflect.ClassPath;
 import io.grapebaba.annotation.ServerHandlerProvider;
 import io.grapebaba.annotation.Service;
 import io.grapebaba.annotation.ServiceInterface;
+import io.grapebaba.config.ServerConfiguration;
 import io.grapebaba.protocol.MessageType;
 import io.grapebaba.protocol.v1.DefaultProtocolV1Header;
 import io.grapebaba.protocol.v1.ProtocolMessage;
@@ -31,13 +32,18 @@ import java.util.Map;
 public class DefaultServerHandler implements ServerHandler<ProtocolMessage> {
   private static final Logger logger = LoggerFactory.getLogger(DefaultServerHandler.class);
 
-  private static Map<String, Object> SERVICE_REGISTRY = Maps.newHashMap();
+  private final Map<String, Object> serviceRegistry = Maps.newHashMap();
 
-  static {
+  /**
+   * Construct default server handler by server configuration.
+   * 
+   * @param serverConfiguration serverConfiguration
+   */
+  public DefaultServerHandler(ServerConfiguration serverConfiguration) {
     try {
       ClassPath
           .from(DefaultServerHandler.class.getClassLoader())
-          .getAllClasses()
+          .getTopLevelClassesRecursive(serverConfiguration.getServicePackages())
           .stream()
           .map(ClassPath.ClassInfo::load)
           .filter(clazz -> clazz.isAnnotationPresent(Service.class))
@@ -46,7 +52,7 @@ public class DefaultServerHandler implements ServerHandler<ProtocolMessage> {
                   .filter(aClass -> aClass.isAnnotationPresent(ServiceInterface.class))
                   .forEach(aClass -> {
                       try {
-                        SERVICE_REGISTRY.put(aClass.getName(), clazz.newInstance());
+                        serviceRegistry.put(aClass.getName(), clazz.newInstance());
                       } catch (InstantiationException | IllegalAccessException e) {
                         logger.error("Register ServerHandler reflection exception", e);
                         throw new RuntimeException("Register ServerHandler io exception", e);
@@ -66,7 +72,7 @@ public class DefaultServerHandler implements ServerHandler<ProtocolMessage> {
     Object result;
     try {
       result =
-          MethodUtils.invokeMethod(SERVICE_REGISTRY.get(request.getBeanName()),
+          MethodUtils.invokeMethod(serviceRegistry.get(request.getBeanName()),
               request.getMethodName(), request.getArguments());
     } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
       logger.error("Invoke service method exception", e);

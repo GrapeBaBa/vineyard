@@ -1,9 +1,12 @@
-package io.grapebaba;
+package io.grapebaba.codec;
 
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.google.common.reflect.ClassPath;
 
 import io.grapebaba.annotation.ProtocolCodecProvider;
+import io.grapebaba.config.Configuration;
 import io.grapebaba.protocol.Protocol;
 import io.grapebaba.protocol.ProtocolCodec;
 import io.netty.buffer.ByteBuf;
@@ -17,27 +20,40 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+
 /**
  * The default protocol codec.
  */
 public class ProtocolsCodec extends MessageToMessageCodec<ByteBuf, Protocol> {
   private static final Logger logger = LoggerFactory.getLogger(ProtocolsCodec.class);
 
-  private static final Map<Byte, ProtocolCodec> CODEC_REGISTRY = Maps.newHashMap();
+  public final Map<Byte, ProtocolCodec> codecRegistry = Maps.newHashMap();
 
-  static {
+
+  /**
+   * Construct protocols codec through server configuration.
+   *
+   * @param configuration configuration
+   */
+  public ProtocolsCodec(Configuration configuration) {
     try {
-      ClassPath
-          .from(ProtocolsCodec.class.getClassLoader())
-          .getAllClasses()
+      ImmutableSet<ClassPath.ClassInfo> internalProtocolCodecs =
+          ClassPath.from(ProtocolsCodec.class.getClassLoader()).getTopLevelClassesRecursive(
+              Configuration.INTERNAL_PACKAGE);
+
+      ImmutableSet<ClassPath.ClassInfo> customProtocolCodecs =
+          ClassPath.from(ProtocolsCodec.class.getClassLoader()).getTopLevelClassesRecursive(
+              configuration.getCodecPackages());
+
+      Sets.union(internalProtocolCodecs, customProtocolCodecs)
           .stream()
           .map(ClassPath.ClassInfo::load)
           .filter(clazz -> clazz.isAnnotationPresent(ProtocolCodecProvider.class))
           .forEach(
               clazz -> {
               try {
-                CODEC_REGISTRY.put(clazz.getAnnotation(ProtocolCodecProvider.class).magicNumber(),
-                    (ProtocolCodec) clazz.newInstance());
+                codecRegistry.put(clazz.getAnnotation(ProtocolCodecProvider.class).magicNumber(),
+                      (ProtocolCodec) clazz.newInstance());
               } catch (InstantiationException | IllegalAccessException e) {
                 logger.error("Register codec instantiation exception", e);
                 throw new RuntimeException("Register codec instantiation exception", e);
@@ -53,13 +69,14 @@ public class ProtocolsCodec extends MessageToMessageCodec<ByteBuf, Protocol> {
   @SuppressWarnings({"unchecked"})
   protected void encode(ChannelHandlerContext ctx, Protocol msg, List<Object> out)
           throws Exception {
-    out.add(CODEC_REGISTRY.get(msg.getMagicNumber()).encode(msg));
+    out.add(codecRegistry.get(msg.getMagicNumber()).encode(msg));
   }
 
   @Override
-  protected void decode(ChannelHandlerContext ctx, ByteBuf msg, List<Object> out) throws Exception {
+  protected void decode(ChannelHandlerContext ctx, ByteBuf msg, List<Object> out)
+          throws Exception {
     final int magicNumberPosition = 0;
     final byte magicNumber = msg.getByte(magicNumberPosition);
-    out.add(CODEC_REGISTRY.get(magicNumber).decode(msg));
+    out.add(codecRegistry.get(magicNumber).decode(msg));
   }
 }
