@@ -35,29 +35,31 @@ public class DefaultServerHandler implements ServerHandler<ProtocolMessage> {
   private final Map<String, Object> serviceRegistry = Maps.newHashMap();
 
   /**
-   * Construct default server handler by server configuration.
+   * Register services.
    * 
-   * @param serverConfiguration serverConfiguration
+   * @param packageName packageName
    */
-  public DefaultServerHandler(ServerConfiguration serverConfiguration) {
+  @Override
+  public void registerServices(String packageName) {
     try {
       ClassPath
           .from(DefaultServerHandler.class.getClassLoader())
-          .getTopLevelClassesRecursive(serverConfiguration.getServicePackages())
+          .getTopLevelClassesRecursive(packageName)
           .stream()
           .map(ClassPath.ClassInfo::load)
           .filter(clazz -> clazz.isAnnotationPresent(Service.class))
           .forEach(
-              clazz -> Arrays.stream(clazz.getInterfaces())
-                  .filter(aClass -> aClass.isAnnotationPresent(ServiceInterface.class))
-                  .forEach(aClass -> {
-                      try {
-                        serviceRegistry.put(aClass.getName(), clazz.newInstance());
-                      } catch (InstantiationException | IllegalAccessException e) {
-                        logger.error("Register ServerHandler reflection exception", e);
-                        throw new RuntimeException("Register ServerHandler io exception", e);
-                      }
-                    }));
+                  clazz -> Arrays.stream(clazz.getInterfaces())
+                          .filter(aClass -> aClass.isAnnotationPresent(ServiceInterface.class))
+                          .forEach(aClass -> {
+                              try {
+                                serviceRegistry.put(aClass.getName(), clazz.newInstance());
+                              } catch (InstantiationException | IllegalAccessException e) {
+                                logger.error("Register ServerHandler reflection exception", e);
+                                throw new RuntimeException("Register ServerHandler io exception",
+                                         e);
+                              }
+                            }));
     } catch (IOException e) {
       logger.error("Register ServerHandler io exception", e);
       throw new RuntimeException("Register ServerHandler io exception", e);

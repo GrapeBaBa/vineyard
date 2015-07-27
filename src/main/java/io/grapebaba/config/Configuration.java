@@ -1,11 +1,13 @@
 package io.grapebaba.config;
 
+import java.util.Optional;
+
 public class Configuration {
   public static final String INTERNAL_PACKAGE = "io.grapebaba";
 
-  protected String codecPackages;
+  protected Optional<String> codecPackage = Optional.empty();
 
-  public String getCodecPackages() {
-    return codecPackages;
+  public Optional<String> getCodecPackage() {
+    return codecPackage;
   }
 }

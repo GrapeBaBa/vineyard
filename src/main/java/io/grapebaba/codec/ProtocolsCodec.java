@@ -27,9 +27,8 @@ import java.util.Map;
 public class ProtocolsCodec extends MessageToMessageCodec<ByteBuf, Protocol> {
   private static final Logger logger = LoggerFactory.getLogger(ProtocolsCodec.class);
 
-  public final Map<Byte, ProtocolCodec> codecRegistry = Maps.newHashMap();
-
-
+  private final Map<Byte, ProtocolCodec> codecRegistry = Maps.newHashMap();
+    
   /**
    * Construct protocols codec through server configuration.
    *
@@ -42,8 +41,9 @@ public class ProtocolsCodec extends MessageToMessageCodec<ByteBuf, Protocol> {
               Configuration.INTERNAL_PACKAGE);
 
       ImmutableSet<ClassPath.ClassInfo> customProtocolCodecs =
-          ClassPath.from(ProtocolsCodec.class.getClassLoader()).getTopLevelClassesRecursive(
-              configuration.getCodecPackages());
+          configuration.getCodecPackage().isPresent() ? ClassPath.from(
+              ProtocolsCodec.class.getClassLoader()).getTopLevelClassesRecursive(
+              configuration.getCodecPackage().get()) : ImmutableSet.<ClassPath.ClassInfo>of();
 
       Sets.union(internalProtocolCodecs, customProtocolCodecs)
           .stream()
@@ -78,5 +78,9 @@ public class ProtocolsCodec extends MessageToMessageCodec<ByteBuf, Protocol> {
     final int magicNumberPosition = 0;
     final byte magicNumber = msg.getByte(magicNumberPosition);
     out.add(codecRegistry.get(magicNumber).decode(msg));
+  }
+
+  public Map<Byte, ProtocolCodec> getCodecRegistry() {
+    return codecRegistry;
   }
 }

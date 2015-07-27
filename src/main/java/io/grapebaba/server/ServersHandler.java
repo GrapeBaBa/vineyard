@@ -38,8 +38,10 @@ public class ServersHandler extends SimpleChannelInboundHandler<Protocol> {
               Configuration.INTERNAL_PACKAGE);
 
       ImmutableSet<ClassPath.ClassInfo> customServerHandlers =
-          ClassPath.from(ServersHandler.class.getClassLoader()).getTopLevelClassesRecursive(
-              serverConfiguration.getServerHandlerPackages());
+          serverConfiguration.getServerHandlerPackage().isPresent() ? ClassPath.from(
+              ServersHandler.class.getClassLoader()).getTopLevelClassesRecursive(
+              serverConfiguration.getServerHandlerPackage().get()) : ImmutableSet
+              .<ClassPath.ClassInfo>of();
 
       Sets.union(internalServerHandlers, customServerHandlers)
           .stream()
@@ -48,8 +50,12 @@ public class ServersHandler extends SimpleChannelInboundHandler<Protocol> {
           .forEach(
               clazz -> {
               try {
+                ServerHandler serverHandler = (ServerHandler) clazz.newInstance();
+                serverHandler.registerServices(
+                    serverConfiguration.getServicePackage().orElseThrow(() ->
+                    new RuntimeException("Must set package name for service registry")));
                 handlerRegistry.put(clazz.getAnnotation(ServerHandlerProvider.class)
-                      .magicNumber(), (ServerHandler) clazz.newInstance());
+                      .magicNumber(), serverHandler);
               } catch (InstantiationException | IllegalAccessException e) {
                 logger.error("Register ServerHandler instantiation exception", e);
                 throw new RuntimeException("Register ServerHandler instantiation exception", e);

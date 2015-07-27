@@ -1,34 +1,37 @@
 package io.grapebaba.config;
 
 import java.util.Objects;
+import java.util.Optional;
 
 public class ServerConfiguration extends Configuration {
-  private String servicePackages;
+  private Optional<String> servicePackage = Optional.empty();
 
-  private String serverHandlerPackages;
+  private Optional<String> serverHandlerPackage = Optional.empty();
 
-  public String getServerHandlerPackages() {
-    return serverHandlerPackages;
+  public Optional<String> getServerHandlerPackage() {
+    return serverHandlerPackage;
   }
 
-  public String getServicePackages() {
-    return servicePackages;
+  public Optional<String> getServicePackage() {
+    return servicePackage;
   }
 
   @Override
-  public boolean equals(Object o) {
-    if (this == o)
+  public boolean equals(Object obj) {
+    if (this == obj) {
       return true;
-    if (o == null || getClass() != o.getClass())
+    }
+    if (obj == null || getClass() != obj.getClass()) {
       return false;
-    ServerConfiguration that = (ServerConfiguration) o;
-    return Objects.equals(servicePackages, that.servicePackages)
-        && Objects.equals(serverHandlerPackages, that.serverHandlerPackages);
+    }
+    ServerConfiguration that = (ServerConfiguration) obj;
+    return Objects.equals(servicePackage, that.servicePackage)
+        && Objects.equals(serverHandlerPackage, that.serverHandlerPackage);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(servicePackages, serverHandlerPackages);
+    return Objects.hash(servicePackage, serverHandlerPackage);
   }
 
   public static class ServerConfigurationBuilder {
@@ -38,18 +41,19 @@ public class ServerConfiguration extends Configuration {
       serverConfiguration = new ServerConfiguration();
     }
 
-    public ServerConfigurationBuilder withServicePackages(String servicePackages) {
-      serverConfiguration.servicePackages = servicePackages;
+    public ServerConfigurationBuilder withServicePackage(Optional<String> servicePackage) {
+      serverConfiguration.servicePackage = servicePackage;
       return this;
     }
 
-    public ServerConfigurationBuilder withServerHandlerPackages(String serverHandlerPackages) {
-      serverConfiguration.serverHandlerPackages = serverHandlerPackages;
+    public ServerConfigurationBuilder withServerHandlerPackage(
+		        Optional<String> serverHandlerPackage) {
+      serverConfiguration.serverHandlerPackage = serverHandlerPackage;
       return this;
     }
 
-    public ServerConfigurationBuilder withCodecPackages(String codecPackages) {
-      serverConfiguration.codecPackages = codecPackages;
+    public ServerConfigurationBuilder withCodecPackage(Optional<String> codecPackage) {
+      serverConfiguration.codecPackage = codecPackage;
       return this;
     }
 
