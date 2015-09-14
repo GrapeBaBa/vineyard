@@ -1,3 +1,5 @@
 rootProject.name = 'grapebaba'
 
+include "modules:grapebaba-common", "modules:grapebaba-client", "modules:grapebaba-server"
+
 
