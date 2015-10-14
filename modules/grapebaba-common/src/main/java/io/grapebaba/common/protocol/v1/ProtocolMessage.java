@@ -14,10 +14,10 @@
 
 package io.grapebaba.common.protocol.v1;
 
-import io.grapebaba.common.protocol.Protocol;
+import io.grapebaba.common.protocol.PipliningSupportedProtocol;
 
 public abstract class ProtocolMessage<H extends DefaultProtocolV1Header, B> implements
-    Protocol<H, B> {
+        PipliningSupportedProtocol<H, B> {
   public static final byte MAGIC_NUMBER = (byte) 0x76;
 
   @Override
