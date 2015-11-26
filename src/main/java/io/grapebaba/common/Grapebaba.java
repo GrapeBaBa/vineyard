@@ -60,44 +60,62 @@ public class Grapebaba {
 	 */
 	public static TcpServer serve(SocketAddress socketAddress,
 			Observable<Function> functionObservable) {
-		return TcpServer.newServer(socketAddress)
+		return TcpServer
+				.newServer(socketAddress)
 				.addChannelHandlerLast(PacketDecoder.class.getName(), PacketDecoder::new)
 				.addChannelHandlerLast(PacketEncoder.class.getName(), PacketEncoder::new)
 				.addChannelHandlerLast(GrapebabaCodecAdapter.class.getName(),
 						GrapebabaCodecAdapter::new)
-				.start(newConnection -> {
-					Observable<Object> resultObservable = newConnection.getInput()
-							.flatMap(o -> {
-						final RequestMessage requestMessage = (RequestMessage) o;
-						final String beanName = requestMessage.getBeanName();
+				.start(newConnection -> newConnection
+						.getInput()
+						.flatMap(
+								o -> {
+									final RequestMessage requestMessage = (RequestMessage) o;
+									final String beanName = requestMessage.getBeanName();
 
-						return functionObservable.first(function -> function.getClass()
-								.getSimpleName().equals(beanName)).map(function -> {
-							Object result;
-							try {
-								result = MethodUtils.invokeMethod(function,
-										requestMessage.getMethodName(),
-										requestMessage.getArguments());
-							}
-							catch (IllegalAccessException | InvocationTargetException
-									| NoSuchMethodException e) {
-								LOGGER.error("Invoke service method exception", e);
-								result = new RuntimeException(
-										"Invoke service method exception", e);
-							}
+									return functionObservable
+											.first(function -> function.getClass()
+													.getSimpleName().equals(beanName))
+											.flatMap(
+													function -> {
+														Object result;
+														try {
+															result = MethodUtils
+																	.invokeMethod(
+																			function,
+																			requestMessage
+																					.getMethodName(),
+																			requestMessage
+																					.getArguments());
+														}
+														catch (IllegalAccessException
+																| InvocationTargetException
+																| NoSuchMethodException e) {
+															LOGGER.error(
+																	"Invoke service method exception",
+																	e);
+															result = new RuntimeException(
+																	"Invoke service method exception",
+																	e);
+														}
 
-							ResponseMessage responseMessage = ResponseMessage.newBuilder()
-									.withMessageType(MessageType.RESPONSE)
-									.withSerializerType(
-											requestMessage.getSerializerType())
-									.withOpaque(requestMessage.getOpaque())
-									.withResult(result).build();
-							return just(responseMessage);
-						});
-					});
+														ResponseMessage responseMessage = ResponseMessage
+																.newBuilder()
+																.withMessageType(
+																		MessageType.RESPONSE)
+																.withSerializerType(
+																		requestMessage
+																				.getSerializerType())
+																.withOpaque(
+																		requestMessage
+																				.getOpaque())
+																.withResult(result)
+																.build();
 
-					return newConnection.writeAndFlushOnEach(resultObservable);
-				});
+														return newConnection
+																.writeAndFlushOnEach(just(responseMessage));
+													});
+								}));
 	}
 
 	/**
@@ -112,14 +130,17 @@ public class Grapebaba {
 			private final ConcurrentMap<Integer, ReplaySubject<ResponseMessage>> req2Res = new ConcurrentHashMap<>();
 
 			private final TcpClient<RequestMessage, ResponseMessage> client = TcpClient
-					.newClient(TcpLoadBalancer
-							.<ByteBuf, ByteBuf> roundRobin(
-									from(socketAddresses).flatMap(socketAddress -> just(
-											create(socketAddress, never()))))
-							.toConnectionProvider())
-					.pipelineConfigurator(entries -> {
-
-			});
+					.newClient(
+							TcpLoadBalancer.<ByteBuf, ByteBuf> roundRobin(
+									from(socketAddresses).flatMap(
+											socketAddress -> just(create(socketAddress,
+													never())))).toConnectionProvider())
+					.addChannelHandlerLast(PacketDecoder.class.getName(),
+							PacketDecoder::new)
+					.addChannelHandlerLast(PacketEncoder.class.getName(),
+							PacketEncoder::new)
+					.addChannelHandlerLast(GrapebabaCodecAdapter.class.getName(),
+							GrapebabaCodecAdapter::new);
 
 			@Override
 			public Single<ResponseMessage> call(RequestMessage message) {
@@ -127,15 +148,17 @@ public class Grapebaba {
 				req2Res.putIfAbsent(message.getOpaque(), response);
 
 				client.createConnectionRequest()
-						.flatMap(connection -> connection.write(Observable.just(message))
-								.cast(ResponseMessage.class)
-								.mergeWith(connection.getInput()))
-						.subscribe(responseMessage -> {
-					ReplaySubject<ResponseMessage> responseMessageReplaySubject = req2Res
-							.get(message.getOpaque());
-					responseMessageReplaySubject.onNext(responseMessage);
-					responseMessageReplaySubject.onCompleted();
-				});
+						.flatMap(
+								connection -> connection.write(Observable.just(message))
+										.cast(ResponseMessage.class)
+										.mergeWith(connection.getInput()))
+						.subscribe(
+								responseMessage -> {
+									ReplaySubject<ResponseMessage> responseMessageReplaySubject = req2Res
+											.get(message.getOpaque());
+									responseMessageReplaySubject.onNext(responseMessage);
+									responseMessageReplaySubject.onCompleted();
+								});
 
 				return response.toSingle();
 			}

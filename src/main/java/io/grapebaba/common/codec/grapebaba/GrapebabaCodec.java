@@ -30,8 +30,8 @@ public class GrapebabaCodec implements ProtocolCodec<GrapebabaMessage> {
 	@Override
 	public GrapebabaMessage decode(ByteBuf byteBuf) {
 		final int messageTypePosition = 0;
-		MessageType messageType = MessageType
-				.valueOf(byteBuf.getByte(messageTypePosition));
+		MessageType messageType = MessageType.valueOf(byteBuf
+				.getByte(messageTypePosition));
 		switch (messageType) {
 		case REQUEST:
 			return new RequestMessageCodec().decode(byteBuf);
@@ -58,8 +58,8 @@ public class GrapebabaCodec implements ProtocolCodec<GrapebabaMessage> {
 		@Override
 		public RequestMessage decode(ByteBuf byteBuf) {
 			final MessageType messageType = MessageType.valueOf(byteBuf.readByte());
-			final SerializerType serializerType = SerializerType
-					.valueOf(byteBuf.readByte());
+			final SerializerType serializerType = SerializerType.valueOf(byteBuf
+					.readByte());
 
 			final Integer opaque = byteBuf.readInt();
 			final Integer timeout = byteBuf.readInt();
@@ -70,13 +70,13 @@ public class GrapebabaCodec implements ProtocolCodec<GrapebabaMessage> {
 			final Integer argumentCount = byteBuf.readInt();
 
 			final Object[] arguments = new Object[argumentCount];
-			for (int i = 0; i < argumentCount - 1; i++) {
+			for (int i = 0; i < argumentCount; i++) {
 				final Integer argumentLength = byteBuf.readInt();
 				final ByteBuf argument = byteBuf.readBytes(argumentLength);
 				final byte[] argumentBytes = new byte[argument.readableBytes()];
 				argument.readBytes(argumentBytes);
-				arguments[i] = Serializers.serializer(serializerType)
-						.deserialize(argumentBytes);
+				arguments[i] = Serializers.serializer(serializerType).deserialize(
+						argumentBytes);
 			}
 
 			return RequestMessage.newBuilder().withMessageType(messageType)
@@ -98,13 +98,13 @@ public class GrapebabaCodec implements ProtocolCodec<GrapebabaMessage> {
 			byteBuf.writeInt(beanName.length);
 			byteBuf.writeBytes(beanName);
 			final byte[] methodName = message.getMethodName().getBytes(UTF_8);
-			byteBuf.writeByte(methodName.length);
+			byteBuf.writeInt(methodName.length);
 			byteBuf.writeBytes(methodName);
 			byteBuf.writeInt(message.getArguments().length);
 
 			for (Object arg : message.getArguments()) {
-				final byte[] argBytes = Serializers.serializer(serializerType)
-						.serialize(arg);
+				final byte[] argBytes = Serializers.serializer(serializerType).serialize(
+						arg);
 				byteBuf.writeInt(argBytes.length);
 				byteBuf.writeBytes(argBytes);
 			}
@@ -118,16 +118,16 @@ public class GrapebabaCodec implements ProtocolCodec<GrapebabaMessage> {
 		@Override
 		public ResponseMessage decode(ByteBuf byteBuf) {
 			final MessageType messageType = MessageType.valueOf(byteBuf.readByte());
-			final SerializerType serializerType = SerializerType
-					.valueOf(byteBuf.readByte());
+			final SerializerType serializerType = SerializerType.valueOf(byteBuf
+					.readByte());
 
 			final Integer opaque = byteBuf.readInt();
 			final Integer resultLength = byteBuf.readInt();
 			final ByteBuf resultByteBuf = byteBuf.readBytes(resultLength);
 			final byte[] resultBytes = new byte[resultByteBuf.readableBytes()];
 			resultByteBuf.readBytes(resultBytes);
-			final Object result = Serializers.serializer(serializerType)
-					.deserialize(resultBytes);
+			final Object result = Serializers.serializer(serializerType).deserialize(
+					resultBytes);
 
 			return ResponseMessage.newBuilder().withMessageType(messageType)
 					.withSerializerType(serializerType).withOpaque(opaque)
@@ -143,8 +143,8 @@ public class GrapebabaCodec implements ProtocolCodec<GrapebabaMessage> {
 			byteBuf.writeByte(serializerType.getValue());
 
 			byteBuf.writeInt(message.getOpaque());
-			final byte[] resultBytes = Serializers.serializer(serializerType)
-					.serialize(message.getResult());
+			final byte[] resultBytes = Serializers.serializer(serializerType).serialize(
+					message.getResult());
 			byteBuf.writeInt(resultBytes.length);
 			byteBuf.writeBytes(resultBytes);
 
