@@ -11,3 +11,4 @@ out/
 .settings/
 .project
 *.log
+/bin/
