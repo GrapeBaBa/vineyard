@@ -12,25 +12,16 @@
  * the License.
  */
 
-package io.grapebaba.common.serializer;
+package io.grapebaba;
 
-import io.grapebaba.common.protocol.SerializerType;
-
-import java.util.EnumMap;
+import rx.Single;
+import rx.functions.Func1;
 
 /**
- * The serializer factory.
+ * A abstraction represent a service.
+ *
+ * @param <Req>
+ * @param <Res>
  */
-public class Serializers {
-	private static final EnumMap<SerializerType, Serializer> map = new EnumMap<>(
-			SerializerType.class);
-
-	static {
-		map.put(SerializerType.FST, new FastSerializer());
-		map.put(SerializerType.KRYO, new KryoSerializer());
-	}
-
-	public static Serializer serializer(SerializerType serializerType) {
-		return map.get(serializerType);
-	}
+public interface Service<Req, Res> extends Func1<Req, Single<Res>> {
 }

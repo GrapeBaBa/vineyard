@@ -12,26 +12,29 @@
  * the License.
  */
 
-package io.grapebaba.common.codec.packet;
+package io.grapebaba.protocol;
 
-import io.grapebaba.common.protocol.packet.Packet;
 import io.netty.buffer.ByteBuf;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.handler.codec.ReplayingDecoder;
-
-import java.util.List;
 
 /**
- * Decode the data packet through content length.
+ * The protocol codec interface.
+ *
+ * @param <P> protocol
  */
-public class PacketDecoder extends ReplayingDecoder<Packet> {
+public interface ProtocolCodec<P> {
+    /**
+     * Protocol decode.
+     *
+     * @param byteBuf input
+     * @return protocol object
+     */
+    P decode(ByteBuf byteBuf);
 
-	@Override
-	protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out)
-			throws Exception {
-		final int payloadLength = in.readInt();
-		final ByteBuf payload = in.readBytes(payloadLength);
-		out.add(Packet.newBuilder().withBodyLength(payloadLength).withBodyByteBuf(payload)
-				.build());
-	}
+    /**
+     * Protocol encode.
+     *
+     * @param protocol input
+     * @return output byteBuf
+     */
+    ByteBuf encode(P protocol);
 }

@@ -1,7 +1,7 @@
 apply plugin: 'idea'
 apply plugin: 'eclipse'
 apply plugin: 'java'
-//apply plugin: 'checkstyle'
+apply plugin: 'checkstyle'
 //apply plugin: 'findbugs'
 //apply plugin: 'jdepend'
 //apply plugin: 'pmd'
@@ -99,10 +99,10 @@ dependencies {
 
 }
 
-//checkstyle {
-//    configFile = file("$rootProject.projectDir/config/checkstyle/google_checks.xml")
-//    toolVersion = '6.7'
-//}
+checkstyle {
+    configFile = file("$rootProject.projectDir/code_quality/checkstyle/google_checks.xml")
+    toolVersion = '6.7'
+}
 
 task wrapper(type: Wrapper) {
     gradleVersion = '2.2.1'

@@ -12,7 +12,7 @@
  * the License.
  */
 
-package io.grapebaba.common.serializer;
+package io.grapebaba.serializer;
 
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Input;
@@ -24,26 +24,34 @@ import com.esotericsoftware.kryo.pool.KryoPool.Builder;
  * The serializer implemented by Kryo library.
  */
 public class KryoSerializer implements Serializer {
-	private static final KryoPool kryoPool = new Builder(() -> {
-		Kryo kryo = new Kryo();
-		// configure kryo instance, customize settings
-		return kryo;
-	}).softReferences().build();
+    private static final KryoPool KRYO_POOL = new Builder(() -> {
+        Kryo kryo = new Kryo();
+        // configure kryo instance, customize settings
+        return kryo;
+    }).softReferences().build();
 
-	/**
-	 * Serialize the object.
-	 * @param obj obj
-	 * @return byte array
-	 */
-	public byte[] serialize(Object obj) {
-		return kryoPool.run(kryo -> {
-			Output output = new Output(4096);
-			kryo.writeClassAndObject(output, obj);
-			return output.getBuffer();
-		});
-	}
+    /**
+     * Serialize the object.
+     *
+     * @param obj obj
+     * @return byte array
+     */
+    public byte[] serialize(Object obj) {
+        final int defaultBufferSize = 4096;
+        return KRYO_POOL.run(kryo -> {
+            Output output = new Output(defaultBufferSize);
+            kryo.writeClassAndObject(output, obj);
+            return output.getBuffer();
+        });
+    }
 
-	public Object deserialize(byte[] bytes) {
-		return kryoPool.run(kryo -> kryo.readClassAndObject(new Input(bytes)));
-	}
+    /**
+     * Deserialize.
+     *
+     * @param bytes input
+     * @return object
+     */
+    public Object deserialize(byte[] bytes) {
+        return KRYO_POOL.run(kryo -> kryo.readClassAndObject(new Input(bytes)));
+    }
 }

@@ -12,20 +12,26 @@
  * the License.
  */
 
-package io.grapebaba.common.codec.packet;
+package io.grapebaba.codec.packet;
 
-import io.grapebaba.common.protocol.packet.Packet;
+import io.grapebaba.protocol.packet.Packet;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.handler.codec.MessageToByteEncoder;
+import io.netty.handler.codec.ReplayingDecoder;
+
+import java.util.List;
 
 /**
- * Encode message to data packet with content length.
+ * Decode the data packet through content length.
  */
-public class PacketEncoder extends MessageToByteEncoder<Packet> {
-	@Override
-	protected void encode(ChannelHandlerContext ctx, Packet msg, ByteBuf out)
-			throws Exception {
-		out.writeInt(msg.getBodyLength()).writeBytes(msg.getBodyByteBuf());
-	}
+public class PacketDecoder extends ReplayingDecoder<Packet> {
+
+    @Override
+    protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out)
+            throws Exception {
+        final int payloadLength = in.readInt();
+        final ByteBuf payload = in.readBytes(payloadLength);
+        out.add(Packet.newBuilder().withBodyLength(payloadLength).withBodyByteBuf(payload)
+                .build());
+    }
 }

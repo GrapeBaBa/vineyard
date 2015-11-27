@@ -12,10 +12,17 @@
  * the License.
  */
 
-package io.grapebaba.common;
+package io.grapebaba;
 
 import rx.Single;
-import rx.functions.Func1;
+import rx.functions.Func2;
 
-public interface Service<Req, Res> extends Func1<Req, Single<Res>> {
+/**
+ * An filter interface for filter request.
+ *
+ * @param <Req> Input request.
+ * @param <Res> Output response.
+ * @author grapebaba
+ */
+public interface Filter<Req, Res> extends Func2<Req, Service<Req, Single<Res>>, Single<Res>> {
 }

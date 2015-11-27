@@ -12,18 +12,20 @@
  * the License.
  */
 
-package io.grapebaba.common;
+package io.grapebaba.codec.packet;
 
-import rx.Single;
-import rx.functions.Func2;
+import io.grapebaba.protocol.packet.Packet;
+import io.netty.buffer.ByteBuf;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.handler.codec.MessageToByteEncoder;
 
 /**
- * An filter interface for filter request.
- * 
- * @author grapebaba
- *
- * @param <Req>
- * @param <Res>
+ * Encode message to data packet with content length.
  */
-public interface Filter<Req, Res> extends Func2<Req, Service<Req, Single<Res>>, Single<Res>> {
+public class PacketEncoder extends MessageToByteEncoder<Packet> {
+    @Override
+    protected void encode(ChannelHandlerContext ctx, Packet msg, ByteBuf out)
+            throws Exception {
+        out.writeInt(msg.getBodyLength()).writeBytes(msg.getBodyByteBuf());
+    }
 }

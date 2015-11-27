@@ -12,20 +12,25 @@
  * the License.
  */
 
-package io.grapebaba.common.protocol;
-
-import io.netty.buffer.ByteBuf;
+package io.grapebaba.serializer;
 
 /**
- * The protocol codec interface.
- * 
- * @param
- * <P>
- * protocol
+ * The serializer interface.
  */
-public interface ProtocolCodec<P> {
+public interface Serializer {
+    /**
+     * Serialize.
+     *
+     * @param object input
+     * @return bytes
+     */
+    byte[] serialize(Object object);
 
-	P decode(ByteBuf byteBuf);
-
-	ByteBuf encode(P protocol);
+    /**
+     * Deserialize.
+     *
+     * @param bytes input
+     * @return object
+     */
+    Object deserialize(byte[] bytes);
 }
