@@ -56,6 +56,7 @@ public abstract class Vineyard {
      * @param functionObservable A set of function objects
      * @return tcpServer
      */
+    @SuppressWarnings({"rawtypes" })
     public static TcpServer serve(SocketAddress socketAddress,
                                   Observable<Function> functionObservable) {
         return TcpServer
