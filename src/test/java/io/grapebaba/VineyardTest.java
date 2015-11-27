@@ -109,7 +109,8 @@ public class VineyardTest {
                 RequestMessage.newBuilder().withSerializerType(SerializerType.JAVA)
                         .withArguments(new Object[]{"GRAPE"})
                         .withMessageType(MessageType.REQUEST).withMethodName("testVoidFunction")
-                        .withBeanName("io.grapebaba.VineyardTest$TestVoidFunction").withTimeout(timeout).withOpaque(opaque)
+                        .withBeanName("io.grapebaba.VineyardTest$TestVoidFunction")
+                        .withTimeout(timeout).withOpaque(opaque)
                         .build();
 
         client.call(requestMessage).subscribe(responseMessage -> {
