@@ -20,12 +20,10 @@ import java.io.Serializable;
  * A common exception for invoking.
  */
 public class InvokeError implements Serializable {
-    /**
-	 * 
-	 */
-	private static final long serialVersionUID = 1595122947615981480L;
-	
-	private String msg;
+
+    private static final long serialVersionUID = 1595122947615981480L;
+
+    private String msg;
 
     /**
      * Default constructor.

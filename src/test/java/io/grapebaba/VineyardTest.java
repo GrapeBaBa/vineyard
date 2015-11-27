@@ -36,7 +36,7 @@ public class VineyardTest {
      * A test for send and receive.
      */
     @SuppressWarnings("rawtypes")
-	@Test
+    @Test
     public void normal() {
         final int port = 8076;
         final int timeout = 200;
@@ -66,7 +66,7 @@ public class VineyardTest {
      * A test for test exception.
      */
     @SuppressWarnings("rawtypes")
-	@Test
+    @Test
     public void testException() {
         final int port = 8077;
         final int timeout = 200;
@@ -96,7 +96,7 @@ public class VineyardTest {
      * A test for test void function.
      */
     @SuppressWarnings("rawtypes")
-	@Test
+    @Test
     public void testVoidFunction() {
         final int port = 8078;
         final int timeout = 200;
