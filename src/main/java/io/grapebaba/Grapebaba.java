@@ -54,8 +54,8 @@ public abstract class Grapebaba {
     /**
      * Return a server object.
      *
-     * @param socketAddress      A socket address.
-     * @param functionObservable A set of function objects.
+     * @param socketAddress      A socket address
+     * @param functionObservable A set of function objects
      * @return tcpServer
      */
     public static TcpServer serve(SocketAddress socketAddress,
@@ -120,8 +120,8 @@ public abstract class Grapebaba {
     /**
      * Return a client object.
      *
-     * @param socketAddresses
-     * @return
+     * @param socketAddresses input
+     * @return a client
      */
     public static Service<RequestMessage, ResponseMessage> newClient(
             SocketAddress... socketAddresses) {
