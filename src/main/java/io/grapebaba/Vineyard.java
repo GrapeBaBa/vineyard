@@ -67,8 +67,8 @@ public abstract class Vineyard {
                 .start(newConnection -> newConnection
                         .getInput()
                         .flatMap(
-                                o -> {
-                                    final RequestMessage requestMessage = (RequestMessage) o;
+                                message -> {
+                                    final RequestMessage requestMessage = (RequestMessage) message;
                                     final String beanName = requestMessage.getBeanName();
 
                                     return functionObservable
@@ -99,14 +99,10 @@ public abstract class Vineyard {
 
                                                         ResponseMessage responseMessage = ResponseMessage
                                                                 .newBuilder()
-                                                                .withMessageType(
-                                                                        MessageType.RESPONSE)
-                                                                .withSerializerType(
-                                                                        requestMessage
-                                                                                .getSerializerType())
-                                                                .withOpaque(
-                                                                        requestMessage
-                                                                                .getOpaque())
+                                                                .withMessageType(MessageType.RESPONSE)
+                                                                .withSerializerType(requestMessage
+                                                                        .getSerializerType())
+                                                                .withOpaque(requestMessage.getOpaque())
                                                                 .withResult(result)
                                                                 .build();
 

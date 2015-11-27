@@ -62,7 +62,7 @@ public class VineyardTest {
     }
 
     /**
-     * A test for send and receive.
+     * A test for test exception.
      */
     @Test
     public void testException() {
@@ -85,6 +85,36 @@ public class VineyardTest {
 
         client.call(requestMessage).subscribe(responseMessage -> {
             System.out.println(((InvokeError) responseMessage.getResult()).getMsg());
+        });
+
+        server.awaitShutdown(waitingTime, TimeUnit.SECONDS);
+    }
+
+    /**
+     * A test for test void function.
+     */
+    @Test
+    public void testVoidFunction() {
+        final int port = 8078;
+        final int timeout = 200;
+        final int opaque = 9999;
+        final long waitingTime = 3L;
+        TcpServer server = Vineyard.serve(new InetSocketAddress(port),
+                Observable.just(new TestVoidFunction()));
+
+        Service<RequestMessage, ResponseMessage> client =
+                Vineyard.newClient(server.getServerAddress());
+
+        RequestMessage requestMessage =
+                RequestMessage.newBuilder().withSerializerType(SerializerType.JAVA)
+                        .withArguments(new Object[]{"GRAPE"})
+                        .withMessageType(MessageType.REQUEST).withMethodName("testVoidFunction")
+                        .withBeanName("io.grapebaba.VineyardTest$TestVoidFunction").withTimeout(timeout).withOpaque(opaque)
+                        .build();
+
+        client.call(requestMessage).subscribe(responseMessage -> {
+            System.out.println(responseMessage.getResult());
+            System.out.println(responseMessage.getOpaque());
         });
 
         server.awaitShutdown(waitingTime, TimeUnit.SECONDS);
@@ -114,6 +144,21 @@ public class VineyardTest {
          */
         public String testException(String source) {
             throw new KryoException("exception", new NullPointerException("null point"));
+        }
+    }
+
+    /**
+     * A function object for test void function.
+     */
+    public class TestVoidFunction implements Function {
+
+        /**
+         * A test method for void function.
+         *
+         * @param source input
+         */
+        public void testVoidFunction(String source) {
+
         }
     }
 }

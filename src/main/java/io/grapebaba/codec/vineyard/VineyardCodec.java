@@ -17,12 +17,14 @@ package io.grapebaba.codec.vineyard;
 import io.grapebaba.protocol.MessageType;
 import io.grapebaba.protocol.ProtocolCodec;
 import io.grapebaba.protocol.SerializerType;
-import io.grapebaba.protocol.vineyard.VineyardMessage;
 import io.grapebaba.protocol.vineyard.RequestMessage;
 import io.grapebaba.protocol.vineyard.ResponseMessage;
-import io.grapebaba.serializer.Serializers;
+import io.grapebaba.protocol.vineyard.VineyardMessage;
 import io.netty.buffer.ByteBuf;
 
+import static io.grapebaba.protocol.MessageType.valueOf;
+import static io.grapebaba.protocol.vineyard.RequestMessage.newBuilder;
+import static io.grapebaba.serializer.Serializers.serializer;
 import static io.netty.buffer.PooledByteBufAllocator.DEFAULT;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
@@ -34,7 +36,7 @@ public class VineyardCodec implements ProtocolCodec<VineyardMessage> {
     @Override
     public VineyardMessage decode(ByteBuf byteBuf) {
         final int messageTypePosition = 0;
-        MessageType messageType = MessageType.valueOf(byteBuf
+        MessageType messageType = valueOf(byteBuf
                 .getByte(messageTypePosition));
         switch (messageType) {
             case REQUEST:
@@ -64,7 +66,7 @@ public class VineyardCodec implements ProtocolCodec<VineyardMessage> {
     static final class RequestMessageCodec implements ProtocolCodec<RequestMessage> {
         @Override
         public RequestMessage decode(ByteBuf byteBuf) {
-            final MessageType messageType = MessageType.valueOf(byteBuf.readByte());
+            final MessageType messageType = valueOf(byteBuf.readByte());
             final SerializerType serializerType = SerializerType.valueOf(byteBuf
                     .readByte());
 
@@ -82,11 +84,11 @@ public class VineyardCodec implements ProtocolCodec<VineyardMessage> {
                 final ByteBuf argument = byteBuf.readBytes(argumentLength);
                 final byte[] argumentBytes = new byte[argument.readableBytes()];
                 argument.readBytes(argumentBytes);
-                arguments[i] = Serializers.serializer(serializerType).deserialize(
+                arguments[i] = serializer(serializerType).deserialize(
                         argumentBytes);
             }
 
-            return RequestMessage.newBuilder().withMessageType(messageType)
+            return newBuilder().withMessageType(messageType)
                     .withSerializerType(serializerType).withOpaque(opaque)
                     .withTimeout(timeout).withBeanName(beanName)
                     .withMethodName(methodName).withArguments(arguments).build();
@@ -110,7 +112,7 @@ public class VineyardCodec implements ProtocolCodec<VineyardMessage> {
             byteBuf.writeInt(message.getArguments().length);
 
             for (Object arg : message.getArguments()) {
-                final byte[] argBytes = Serializers.serializer(serializerType).serialize(
+                final byte[] argBytes = serializer(serializerType).serialize(
                         arg);
                 byteBuf.writeInt(argBytes.length);
                 byteBuf.writeBytes(argBytes);
@@ -127,17 +129,22 @@ public class VineyardCodec implements ProtocolCodec<VineyardMessage> {
     static final class ResponseMessageCodec implements ProtocolCodec<ResponseMessage> {
         @Override
         public ResponseMessage decode(ByteBuf byteBuf) {
-            final MessageType messageType = MessageType.valueOf(byteBuf.readByte());
+            final MessageType messageType = valueOf(byteBuf.readByte());
             final SerializerType serializerType = SerializerType.valueOf(byteBuf
                     .readByte());
 
             final Integer opaque = byteBuf.readInt();
             final Integer resultLength = byteBuf.readInt();
-            final ByteBuf resultByteBuf = byteBuf.readBytes(resultLength);
-            final byte[] resultBytes = new byte[resultByteBuf.readableBytes()];
-            resultByteBuf.readBytes(resultBytes);
-            final Object result = Serializers.serializer(serializerType).deserialize(
-                    resultBytes);
+            final Object result;
+            if (resultLength > 0) {
+                final ByteBuf resultByteBuf = byteBuf.readBytes(resultLength);
+                final byte[] resultBytes = new byte[resultByteBuf.readableBytes()];
+                resultByteBuf.readBytes(resultBytes);
+                result = serializer(serializerType).deserialize(
+                        resultBytes);
+            } else {
+                result = null;
+            }
 
             return ResponseMessage.newBuilder().withMessageType(messageType)
                     .withSerializerType(serializerType).withOpaque(opaque)
@@ -153,10 +160,15 @@ public class VineyardCodec implements ProtocolCodec<VineyardMessage> {
             byteBuf.writeByte(serializerType.getValue());
 
             byteBuf.writeInt(message.getOpaque());
-            final byte[] resultBytes = Serializers.serializer(serializerType).serialize(
-                    message.getResult());
-            byteBuf.writeInt(resultBytes.length);
-            byteBuf.writeBytes(resultBytes);
+            Object result = message.getResult();
+            if (null != result) {
+                final byte[] resultBytes = serializer(serializerType).serialize(
+                        message.getResult());
+                byteBuf.writeInt(resultBytes.length);
+                byteBuf.writeBytes(resultBytes);
+            } else {
+                byteBuf.writeInt(0);
+            }
 
             return byteBuf;
         }
