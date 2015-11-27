@@ -14,6 +14,7 @@
 
 package io.grapebaba;
 
+import com.esotericsoftware.kryo.KryoException;
 import io.grapebaba.protocol.MessageType;
 import io.grapebaba.protocol.SerializerType;
 import io.grapebaba.protocol.vineyard.RequestMessage;
@@ -22,6 +23,7 @@ import io.reactivex.netty.protocol.tcp.server.TcpServer;
 import org.junit.Test;
 import rx.Observable;
 import rx.functions.Func1;
+import rx.functions.Function;
 
 import java.net.InetSocketAddress;
 import java.util.concurrent.TimeUnit;
@@ -30,17 +32,16 @@ import java.util.concurrent.TimeUnit;
  * A unit test for vineyard protocol.
  */
 public class VineyardTest {
-    private static final int PORT = 8076;
-
     /**
      * A test for send and receive.
      */
     @Test
-    public void server() {
+    public void normal() {
+        final int port = 8076;
         final int timeout = 200;
         final int opaque = 9999;
         final long waitingTime = 3L;
-        TcpServer server = Vineyard.serve(new InetSocketAddress(PORT),
+        TcpServer server = Vineyard.serve(new InetSocketAddress(port),
                 Observable.just(new TestFunc()));
 
         Service<RequestMessage, ResponseMessage> client =
@@ -50,11 +51,40 @@ public class VineyardTest {
                 RequestMessage.newBuilder().withSerializerType(SerializerType.KRYO)
                         .withArguments(new Object[]{"GRAPE"})
                         .withMessageType(MessageType.REQUEST).withMethodName("call")
-                        .withBeanName("TestFunc").withTimeout(timeout).withOpaque(opaque)
+                        .withBeanName("io.grapebaba.VineyardTest$TestFunc").withTimeout(timeout).withOpaque(opaque)
                         .build();
 
         client.call(requestMessage).subscribe(responseMessage -> {
             System.out.println(responseMessage.getResult());
+        });
+
+        server.awaitShutdown(waitingTime, TimeUnit.SECONDS);
+    }
+
+    /**
+     * A test for send and receive.
+     */
+    @Test
+    public void testException() {
+        final int port = 8077;
+        final int timeout = 200;
+        final int opaque = 9999;
+        final long waitingTime = 3L;
+        TcpServer server = Vineyard.serve(new InetSocketAddress(port),
+                Observable.just(new TestThrowable()));
+
+        Service<RequestMessage, ResponseMessage> client =
+                Vineyard.newClient(server.getServerAddress());
+
+        RequestMessage requestMessage =
+                RequestMessage.newBuilder().withSerializerType(SerializerType.KRYO)
+                        .withArguments(new Object[]{"GRAPE"})
+                        .withMessageType(MessageType.REQUEST).withMethodName("testException")
+                        .withBeanName("io.grapebaba.VineyardTest$TestThrowable").withTimeout(timeout).withOpaque(opaque)
+                        .build();
+
+        client.call(requestMessage).subscribe(responseMessage -> {
+            System.out.println(((InvokeError) responseMessage.getResult()).getMsg());
         });
 
         server.awaitShutdown(waitingTime, TimeUnit.SECONDS);
@@ -66,8 +96,24 @@ public class VineyardTest {
     public class TestFunc implements Func1<String, String> {
 
         @Override
-        public String call(String s) {
-            return s.toLowerCase();
+        public String call(String source) {
+            return source.toLowerCase();
+        }
+    }
+
+    /**
+     * A function object for test exception.
+     */
+    public class TestThrowable implements Function {
+
+        /**
+         * A test method for throwing exception.
+         *
+         * @param source input
+         * @return output
+         */
+        public String testException(String source) {
+            throw new KryoException("exception", new NullPointerException("null point"));
         }
     }
 }

@@ -32,11 +32,11 @@ import rx.Single;
 import rx.functions.Function;
 import rx.subjects.ReplaySubject;
 
-import java.lang.reflect.InvocationTargetException;
 import java.net.SocketAddress;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import static com.google.common.base.Throwables.getRootCause;
 import static netflix.ocelli.Instance.create;
 import static rx.Observable.from;
 import static rx.Observable.just;
@@ -73,7 +73,7 @@ public abstract class Vineyard {
 
                                     return functionObservable
                                             .first(function -> function.getClass()
-                                                    .getSimpleName().equals(beanName))
+                                                    .getName().equals(beanName))
                                             .flatMap(
                                                     function -> {
                                                         Object result;
@@ -85,15 +85,16 @@ public abstract class Vineyard {
                                                                                     .getMethodName(),
                                                                             requestMessage
                                                                                     .getArguments());
-                                                        } catch (IllegalAccessException
-                                                                | InvocationTargetException
-                                                                | NoSuchMethodException e) {
+                                                        } catch (Throwable e) {
                                                             LOGGER.error(
                                                                     "Invoke service method exception",
                                                                     e);
-                                                            result = new RuntimeException(
-                                                                    "Invoke service method exception",
-                                                                    e);
+                                                            Throwable root = getRootCause(e);
+                                                            result = new InvokeError(
+                                                                    null == root
+                                                                            ? "Cannot find root cause exception"
+                                                                            : root.getClass().getName()
+                                                                            + ":" + root.getMessage());
                                                         }
 
                                                         ResponseMessage responseMessage = ResponseMessage
