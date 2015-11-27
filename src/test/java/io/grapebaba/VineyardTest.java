@@ -48,7 +48,7 @@ public class VineyardTest {
                 Vineyard.newClient(server.getServerAddress());
 
         RequestMessage requestMessage =
-                RequestMessage.newBuilder().withSerializerType(SerializerType.KRYO)
+                RequestMessage.newBuilder().withSerializerType(SerializerType.JAVA)
                         .withArguments(new Object[]{"GRAPE"})
                         .withMessageType(MessageType.REQUEST).withMethodName("call")
                         .withBeanName("io.grapebaba.VineyardTest$TestFunc").withTimeout(timeout).withOpaque(opaque)
@@ -77,7 +77,7 @@ public class VineyardTest {
                 Vineyard.newClient(server.getServerAddress());
 
         RequestMessage requestMessage =
-                RequestMessage.newBuilder().withSerializerType(SerializerType.KRYO)
+                RequestMessage.newBuilder().withSerializerType(SerializerType.JAVA)
                         .withArguments(new Object[]{"GRAPE"})
                         .withMessageType(MessageType.REQUEST).withMethodName("testException")
                         .withBeanName("io.grapebaba.VineyardTest$TestThrowable").withTimeout(timeout).withOpaque(opaque)

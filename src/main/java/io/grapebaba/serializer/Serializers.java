@@ -26,6 +26,7 @@ public abstract class Serializers {
             SerializerType.class);
 
     static {
+        SERIALIZER_ENUM_MAP.put(SerializerType.JAVA, new JavaSerializer());
         SERIALIZER_ENUM_MAP.put(SerializerType.FST, new FastSerializer());
         SERIALIZER_ENUM_MAP.put(SerializerType.KRYO, new KryoSerializer());
     }

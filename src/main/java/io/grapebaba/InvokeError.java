@@ -14,10 +14,12 @@
 
 package io.grapebaba;
 
+import java.io.Serializable;
+
 /**
  * A common exception for invoking.
  */
-public class InvokeError {
+public class InvokeError implements Serializable {
     private String msg;
 
     /**

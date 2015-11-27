@@ -19,6 +19,10 @@ package io.grapebaba.protocol;
  */
 public enum SerializerType {
     /**
+     * DEFAULT Serializer lib.
+     */
+    JAVA,
+    /**
      * FAST Serializer lib.
      */
     FST,
@@ -34,10 +38,12 @@ public enum SerializerType {
      */
     public byte getValue() {
         switch (this) {
-            case FST:
+            case JAVA:
                 return 0x00;
             case KRYO:
                 return 0x01;
+            case FST:
+                return 0x02;
             default:
                 throw new IllegalArgumentException("Unknown SerializerType" + this);
         }
@@ -53,9 +59,11 @@ public enum SerializerType {
     public static SerializerType valueOf(byte value) {
         switch (value) {
             case 0x00:
-                return FST;
+                return JAVA;
             case 0x01:
                 return KRYO;
+            case 0x02:
+                return FST;
             default:
                 throw new IllegalArgumentException("Unknown SerializerType" + value);
         }
