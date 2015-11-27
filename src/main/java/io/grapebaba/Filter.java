@@ -22,7 +22,7 @@ import rx.functions.Func2;
  *
  * @param <Req> Input request.
  * @param <Res> Output response.
- * @author grapebaba
+ *
  */
 public interface Filter<Req, Res> extends Func2<Req, Service<Req, Single<Res>>, Single<Res>> {
 }

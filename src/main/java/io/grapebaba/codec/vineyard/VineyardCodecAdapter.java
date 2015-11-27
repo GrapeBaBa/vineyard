@@ -12,9 +12,9 @@
  * the License.
  */
 
-package io.grapebaba.codec.grapebaba;
+package io.grapebaba.codec.vineyard;
 
-import io.grapebaba.protocol.grapebaba.GrapebabaMessage;
+import io.grapebaba.protocol.vineyard.VineyardMessage;
 import io.grapebaba.protocol.packet.Packet;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
@@ -25,17 +25,17 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 
 /**
- * The netty codec for GrapebabaMessage codec.
+ * The netty codec for VineyardMessage codec.
  */
-public class GrapebabaCodecAdapter
-        extends MessageToMessageCodec<Packet, GrapebabaMessage> {
+public class VineyardCodecAdapter
+        extends MessageToMessageCodec<Packet, VineyardMessage> {
     private static final Logger LOGGER = LoggerFactory
-            .getLogger(GrapebabaCodecAdapter.class);
+            .getLogger(VineyardCodecAdapter.class);
 
-    private static final GrapebabaCodec CODEC = new GrapebabaCodec();
+    private static final VineyardCodec CODEC = new VineyardCodec();
 
     @Override
-    protected void encode(ChannelHandlerContext ctx, GrapebabaMessage msg,
+    protected void encode(ChannelHandlerContext ctx, VineyardMessage msg,
                           List<Object> out) throws Exception {
         final ByteBuf payload = CODEC.encode(msg);
         final int payloadLength = payload.readableBytes();

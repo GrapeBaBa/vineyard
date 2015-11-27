@@ -20,8 +20,8 @@ import rx.functions.Func1;
 /**
  * A abstraction represent a service.
  *
- * @param <Req>
- * @param <Res>
+ * @param <Req> input
+ * @param <Res> output
  */
 public interface Service<Req, Res> extends Func1<Req, Single<Res>> {
 }

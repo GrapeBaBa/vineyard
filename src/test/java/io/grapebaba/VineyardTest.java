@@ -16,8 +16,8 @@ package io.grapebaba;
 
 import io.grapebaba.protocol.MessageType;
 import io.grapebaba.protocol.SerializerType;
-import io.grapebaba.protocol.grapebaba.RequestMessage;
-import io.grapebaba.protocol.grapebaba.ResponseMessage;
+import io.grapebaba.protocol.vineyard.RequestMessage;
+import io.grapebaba.protocol.vineyard.ResponseMessage;
 import io.reactivex.netty.protocol.tcp.server.TcpServer;
 import org.junit.Test;
 import rx.Observable;
@@ -27,9 +27,9 @@ import java.net.InetSocketAddress;
 import java.util.concurrent.TimeUnit;
 
 /**
- * A unit test for grapebaba protocol.
+ * A unit test for vineyard protocol.
  */
-public class GrapebabaTest {
+public class VineyardTest {
     private static final int PORT = 8076;
 
     /**
@@ -40,11 +40,11 @@ public class GrapebabaTest {
         final int timeout = 200;
         final int opaque = 9999;
         final long waitingTime = 3L;
-        TcpServer server = Grapebaba.serve(new InetSocketAddress(PORT),
+        TcpServer server = Vineyard.serve(new InetSocketAddress(PORT),
                 Observable.just(new TestFunc()));
 
         Service<RequestMessage, ResponseMessage> client =
-                Grapebaba.newClient(server.getServerAddress());
+                Vineyard.newClient(server.getServerAddress());
 
         RequestMessage requestMessage =
                 RequestMessage.newBuilder().withSerializerType(SerializerType.KRYO)

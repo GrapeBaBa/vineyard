@@ -12,14 +12,14 @@
  * the License.
  */
 
-package io.grapebaba.protocol.grapebaba;
+package io.grapebaba.protocol.vineyard;
 
 import io.grapebaba.protocol.MessageType;
 
 /**
- * Grapebaba protocol base class.
+ * Vineyard protocol base class.
  */
-public interface GrapebabaMessage {
+public interface VineyardMessage {
 
     /**
      * Get message type.

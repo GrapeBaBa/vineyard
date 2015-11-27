@@ -12,7 +12,7 @@
  * the License.
  */
 
-package io.grapebaba.protocol.grapebaba;
+package io.grapebaba.protocol.vineyard;
 
 import com.google.common.base.MoreObjects;
 import io.grapebaba.protocol.MessageType;
@@ -23,7 +23,7 @@ import java.util.Objects;
 /**
  * The default rpc protocol response message.
  */
-public final class ResponseMessage implements GrapebabaMessage {
+public final class ResponseMessage implements VineyardMessage {
     private MessageType messageType;
 
     private SerializerType serializerType;

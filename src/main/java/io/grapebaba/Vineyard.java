@@ -14,12 +14,12 @@
 
 package io.grapebaba;
 
-import io.grapebaba.codec.grapebaba.GrapebabaCodecAdapter;
+import io.grapebaba.codec.vineyard.VineyardCodecAdapter;
 import io.grapebaba.codec.packet.PacketDecoder;
 import io.grapebaba.codec.packet.PacketEncoder;
 import io.grapebaba.protocol.MessageType;
-import io.grapebaba.protocol.grapebaba.RequestMessage;
-import io.grapebaba.protocol.grapebaba.ResponseMessage;
+import io.grapebaba.protocol.vineyard.RequestMessage;
+import io.grapebaba.protocol.vineyard.ResponseMessage;
 import io.netty.buffer.ByteBuf;
 import io.reactivex.netty.protocol.tcp.client.TcpClient;
 import io.reactivex.netty.protocol.tcp.server.TcpServer;
@@ -44,12 +44,10 @@ import static rx.Observable.never;
 
 
 /**
- * Grapebaba protocol representation.
- *
- * @author grapebaba
+ * Vineyard protocol representation.
  */
-public abstract class Grapebaba {
-    private static final Logger LOGGER = LoggerFactory.getLogger(Grapebaba.class);
+public abstract class Vineyard {
+    private static final Logger LOGGER = LoggerFactory.getLogger(Vineyard.class);
 
     /**
      * Return a server object.
@@ -64,8 +62,8 @@ public abstract class Grapebaba {
                 .newServer(socketAddress)
                 .addChannelHandlerLast(PacketDecoder.class.getName(), PacketDecoder::new)
                 .addChannelHandlerLast(PacketEncoder.class.getName(), PacketEncoder::new)
-                .addChannelHandlerLast(GrapebabaCodecAdapter.class.getName(),
-                        GrapebabaCodecAdapter::new)
+                .addChannelHandlerLast(VineyardCodecAdapter.class.getName(),
+                        VineyardCodecAdapter::new)
                 .start(newConnection -> newConnection
                         .getInput()
                         .flatMap(
@@ -138,8 +136,8 @@ public abstract class Grapebaba {
                             PacketDecoder::new)
                     .addChannelHandlerLast(PacketEncoder.class.getName(),
                             PacketEncoder::new)
-                    .addChannelHandlerLast(GrapebabaCodecAdapter.class.getName(),
-                            GrapebabaCodecAdapter::new);
+                    .addChannelHandlerLast(VineyardCodecAdapter.class.getName(),
+                            VineyardCodecAdapter::new);
 
             @Override
             public Single<ResponseMessage> call(RequestMessage message) {

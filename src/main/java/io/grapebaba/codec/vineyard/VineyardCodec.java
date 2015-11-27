@@ -12,14 +12,14 @@
  * the License.
  */
 
-package io.grapebaba.codec.grapebaba;
+package io.grapebaba.codec.vineyard;
 
 import io.grapebaba.protocol.MessageType;
 import io.grapebaba.protocol.ProtocolCodec;
 import io.grapebaba.protocol.SerializerType;
-import io.grapebaba.protocol.grapebaba.GrapebabaMessage;
-import io.grapebaba.protocol.grapebaba.RequestMessage;
-import io.grapebaba.protocol.grapebaba.ResponseMessage;
+import io.grapebaba.protocol.vineyard.VineyardMessage;
+import io.grapebaba.protocol.vineyard.RequestMessage;
+import io.grapebaba.protocol.vineyard.ResponseMessage;
 import io.grapebaba.serializer.Serializers;
 import io.netty.buffer.ByteBuf;
 
@@ -27,12 +27,12 @@ import static io.netty.buffer.PooledByteBufAllocator.DEFAULT;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
- * Grapebaba protocol codec.
+ * Vineyard protocol codec.
  */
-public class GrapebabaCodec implements ProtocolCodec<GrapebabaMessage> {
+public class VineyardCodec implements ProtocolCodec<VineyardMessage> {
 
     @Override
-    public GrapebabaMessage decode(ByteBuf byteBuf) {
+    public VineyardMessage decode(ByteBuf byteBuf) {
         final int messageTypePosition = 0;
         MessageType messageType = MessageType.valueOf(byteBuf
                 .getByte(messageTypePosition));
@@ -42,19 +42,19 @@ public class GrapebabaCodec implements ProtocolCodec<GrapebabaMessage> {
             case RESPONSE:
                 return new ResponseMessageCodec().decode(byteBuf);
             default:
-                throw new RuntimeException("Cannot decode message by GrapebabaCodec");
+                throw new RuntimeException("Cannot decode message by VineyardCodec");
         }
     }
 
     @Override
-    public ByteBuf encode(GrapebabaMessage message) {
+    public ByteBuf encode(VineyardMessage message) {
         switch (message.getMessageType()) {
             case REQUEST:
                 return new RequestMessageCodec().encode((RequestMessage) message);
             case RESPONSE:
                 return new ResponseMessageCodec().encode((ResponseMessage) message);
             default:
-                throw new RuntimeException("Cannot decode message by GrapebabaCodec");
+                throw new RuntimeException("Cannot decode message by VineyardCodec");
         }
     }
 
