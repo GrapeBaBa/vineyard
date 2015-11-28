@@ -1,1 +1,1 @@
-今天成功跑了第一个测试。
+[![Build Status](https://travis-ci.org/GrapeBaBa/vineyard.svg?branch=master)](https://travis-ci.org/GrapeBaBa/vineyard)
