@@ -14,14 +14,14 @@
 
 package io.grapebaba.protocol.vineyard;
 
-import com.google.common.base.MoreObjects;
 import io.grapebaba.protocol.MessageType;
 import io.grapebaba.protocol.SerializerType;
 
 import java.util.Objects;
 
+import static com.google.common.base.MoreObjects.toStringHelper;
+
 //TODO: add rpc way property(request/response,one-way...)
-//TODO: custom protocol by set param when create common
 
 /**
  * The default rpc protocol request message.
@@ -116,7 +116,7 @@ public final class RequestMessage implements VineyardMessage {
 
     @Override
     public String toString() {
-        return MoreObjects.toStringHelper(this).add("messageType", messageType)
+        return toStringHelper(this).add("messageType", messageType)
                 .add("serializerType", serializerType).add("opaque", opaque)
                 .add("timeout", timeout).add("beanName", beanName)
                 .add("methodName", methodName).add("arguments", arguments).toString();

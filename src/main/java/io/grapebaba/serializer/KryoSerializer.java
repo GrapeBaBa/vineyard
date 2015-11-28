@@ -38,7 +38,7 @@ public class KryoSerializer implements Serializer {
      */
     @Override
     public byte[] serialize(Object obj) {
-        final int defaultBufferSize = 4096;
+        final int defaultBufferSize = 1024;
         return KRYO_POOL.run(kryo -> {
             Output output = new Output(defaultBufferSize);
             kryo.writeClassAndObject(output, obj);

@@ -24,6 +24,8 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
+import static io.grapebaba.protocol.packet.Packet.newBuilder;
+
 /**
  * The netty codec for VineyardMessage codec.
  */
@@ -39,7 +41,7 @@ public class VineyardCodecAdapter
                           List<Object> out) throws Exception {
         final ByteBuf payload = CODEC.encode(msg);
         final int payloadLength = payload.readableBytes();
-        out.add(Packet.newBuilder().withBodyLength(payloadLength).withBodyByteBuf(payload)
+        out.add(newBuilder().withBodyLength(payloadLength).withBodyByteBuf(payload)
                 .build());
     }
 

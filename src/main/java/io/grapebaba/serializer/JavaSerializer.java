@@ -30,15 +30,15 @@ public class JavaSerializer implements Serializer {
         if (object == null) {
             return null;
         }
-        ByteArrayOutputStream baos = new ByteArrayOutputStream(defaultBufferSize);
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream(defaultBufferSize);
         try {
-            ObjectOutputStream oos = new ObjectOutputStream(baos);
+            ObjectOutputStream oos = new ObjectOutputStream(byteArrayOutputStream);
             oos.writeObject(object);
             oos.flush();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        return baos.toByteArray();
+        return byteArrayOutputStream.toByteArray();
     }
 
     @Override

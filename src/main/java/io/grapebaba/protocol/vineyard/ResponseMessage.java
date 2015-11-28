@@ -14,11 +14,12 @@
 
 package io.grapebaba.protocol.vineyard;
 
-import com.google.common.base.MoreObjects;
 import io.grapebaba.protocol.MessageType;
 import io.grapebaba.protocol.SerializerType;
 
 import java.util.Objects;
+
+import static com.google.common.base.MoreObjects.toStringHelper;
 
 /**
  * The default rpc protocol response message.
@@ -87,7 +88,7 @@ public final class ResponseMessage implements VineyardMessage {
 
     @Override
     public String toString() {
-        return MoreObjects.toStringHelper(this).add("messageType", messageType)
+        return toStringHelper(this).add("messageType", messageType)
                 .add("serializerType", serializerType).add("opaque", opaque)
                 .add("result", result).toString();
     }

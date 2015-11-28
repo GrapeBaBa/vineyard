@@ -21,6 +21,8 @@ import io.netty.handler.codec.ReplayingDecoder;
 
 import java.util.List;
 
+import static io.grapebaba.protocol.packet.Packet.newBuilder;
+
 /**
  * Decode the data packet through content length.
  */
@@ -31,7 +33,7 @@ public class PacketDecoder extends ReplayingDecoder<Packet> {
             throws Exception {
         final int payloadLength = in.readInt();
         final ByteBuf payload = in.readBytes(payloadLength);
-        out.add(Packet.newBuilder().withBodyLength(payloadLength).withBodyByteBuf(payload)
+        out.add(newBuilder().withBodyLength(payloadLength).withBodyByteBuf(payload)
                 .build());
     }
 }

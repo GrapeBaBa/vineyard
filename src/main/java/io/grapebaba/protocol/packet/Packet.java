@@ -14,10 +14,11 @@
 
 package io.grapebaba.protocol.packet;
 
-import com.google.common.base.MoreObjects;
 import io.netty.buffer.ByteBuf;
 
 import java.util.Objects;
+
+import static com.google.common.base.MoreObjects.toStringHelper;
 
 /**
  * The data packet structure.
@@ -69,7 +70,7 @@ public final class Packet {
 
     @Override
     public String toString() {
-        return MoreObjects.toStringHelper(this).add("bodyByteBuf", bodyByteBuf)
+        return toStringHelper(this).add("bodyByteBuf", bodyByteBuf)
                 .add("bodyLength", bodyLength).toString();
     }
 
