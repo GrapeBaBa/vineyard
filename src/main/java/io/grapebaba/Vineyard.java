@@ -14,9 +14,9 @@
 
 package io.grapebaba;
 
-import io.grapebaba.codec.vineyard.VineyardCodecAdapter;
 import io.grapebaba.codec.packet.PacketDecoder;
 import io.grapebaba.codec.packet.PacketEncoder;
+import io.grapebaba.codec.vineyard.VineyardCodecAdapter;
 import io.grapebaba.core.VineyardServer;
 import io.grapebaba.protocol.MessageType;
 import io.grapebaba.protocol.packet.Packet;
@@ -24,13 +24,11 @@ import io.grapebaba.protocol.vineyard.RequestMessage;
 import io.grapebaba.protocol.vineyard.ResponseMessage;
 import io.netty.buffer.ByteBuf;
 import io.reactivex.netty.protocol.tcp.client.TcpClient;
-import io.reactivex.netty.protocol.tcp.server.TcpServer;
 import netflix.ocelli.rxnetty.protocol.tcp.TcpLoadBalancer;
 import org.apache.commons.lang3.reflect.MethodUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import rx.Observable;
-import rx.Single;
 import rx.functions.Function;
 import rx.subjects.ReplaySubject;
 
@@ -40,9 +38,7 @@ import java.util.concurrent.ConcurrentMap;
 
 import static com.google.common.base.Throwables.getRootCause;
 import static netflix.ocelli.Instance.create;
-import static rx.Observable.from;
-import static rx.Observable.just;
-import static rx.Observable.never;
+import static rx.Observable.*;
 
 
 /**

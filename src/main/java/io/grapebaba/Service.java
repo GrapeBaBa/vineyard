@@ -15,7 +15,6 @@
 package io.grapebaba;
 
 import rx.Observable;
-import rx.Single;
 import rx.functions.Func1;
 
 /**
