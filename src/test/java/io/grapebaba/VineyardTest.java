@@ -15,6 +15,7 @@
 package io.grapebaba;
 
 import com.esotericsoftware.kryo.KryoException;
+import io.grapebaba.core.VineyardServer;
 import io.grapebaba.protocol.MessageType;
 import io.grapebaba.protocol.SerializerType;
 import io.grapebaba.protocol.vineyard.RequestMessage;
@@ -42,7 +43,7 @@ public class VineyardTest {
         final int timeout = 200;
         final int opaque = 9999;
         final long waitingTime = 3L;
-        TcpServer server = Vineyard.serve(new InetSocketAddress(port),
+        VineyardServer server = Vineyard.serve(new InetSocketAddress(port),
                 Observable.just(new TestFunc()));
 
         Service<RequestMessage, ResponseMessage> client =
@@ -72,7 +73,7 @@ public class VineyardTest {
         final int timeout = 200;
         final int opaque = 9999;
         final long waitingTime = 3L;
-        TcpServer server = Vineyard.serve(new InetSocketAddress(port),
+        VineyardServer server = Vineyard.serve(new InetSocketAddress(port),
                 Observable.just(new TestThrowable()));
 
         Service<RequestMessage, ResponseMessage> client =
@@ -102,7 +103,7 @@ public class VineyardTest {
         final int timeout = 200;
         final int opaque = 9999;
         final long waitingTime = 3L;
-        TcpServer server = Vineyard.serve(new InetSocketAddress(port),
+        VineyardServer server = Vineyard.serve(new InetSocketAddress(port),
                 Observable.just(new TestVoidFunction()));
 
         Service<RequestMessage, ResponseMessage> client =

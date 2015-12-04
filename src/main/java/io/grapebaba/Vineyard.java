@@ -17,7 +17,9 @@ package io.grapebaba;
 import io.grapebaba.codec.vineyard.VineyardCodecAdapter;
 import io.grapebaba.codec.packet.PacketDecoder;
 import io.grapebaba.codec.packet.PacketEncoder;
+import io.grapebaba.core.VineyardServer;
 import io.grapebaba.protocol.MessageType;
+import io.grapebaba.protocol.packet.Packet;
 import io.grapebaba.protocol.vineyard.RequestMessage;
 import io.grapebaba.protocol.vineyard.ResponseMessage;
 import io.netty.buffer.ByteBuf;
@@ -56,61 +58,59 @@ public abstract class Vineyard {
      * @param functionObservable A set of function objects
      * @return tcpServer
      */
-    @SuppressWarnings({"rawtypes"})
-    public static TcpServer serve(SocketAddress socketAddress,
+    @SuppressWarnings({"rawtypes" })
+    public static VineyardServer<RequestMessage,ResponseMessage> serve(SocketAddress socketAddress,
                                   Observable<Function> functionObservable) {
-        return TcpServer
+        return VineyardServer
                 .newServer(socketAddress)
-                .addChannelHandlerLast(PacketDecoder.class.getName(), PacketDecoder::new)
-                .addChannelHandlerLast(PacketEncoder.class.getName(), PacketEncoder::new)
-                .addChannelHandlerLast(VineyardCodecAdapter.class.getName(),
+                .<ByteBuf,Packet>addChannelHandlerLast(PacketDecoder.class.getName(), PacketDecoder::new)
+                .<Packet,ByteBuf>addChannelHandlerLast(PacketEncoder.class.getName(), PacketEncoder::new)
+                .<RequestMessage,ResponseMessage>addChannelHandlerLast(VineyardCodecAdapter.class.getName(),
                         VineyardCodecAdapter::new)
-                .start(newConnection -> newConnection
-                        .getInput()
-                        .flatMap(
-                                message -> {
-                                    final RequestMessage requestMessage = (RequestMessage) message;
-                                    final String beanName = requestMessage.getBeanName();
+                .start(
+                    message -> {
+                        final RequestMessage requestMessage = message;
+                        final String beanName = requestMessage.getBeanName();
 
-                                    return functionObservable
-                                            .first(function -> function.getClass()
-                                                    .getName().equals(beanName))
-                                            .flatMap(
-                                                    function -> {
-                                                        Object result;
-                                                        try {
-                                                            result = MethodUtils
-                                                                    .invokeMethod(
-                                                                            function,
-                                                                            requestMessage
-                                                                                    .getMethodName(),
-                                                                            requestMessage
-                                                                                    .getArguments());
-                                                        } catch (Throwable e) {
-                                                            LOGGER.error(
-                                                                    "Invoke service method exception",
-                                                                    e);
-                                                            Throwable root = getRootCause(e);
-                                                            result = new InvokeError(
-                                                                    null == root
-                                                                            ? "Cannot find root cause exception"
-                                                                            : root.getClass().getName()
-                                                                            + ":" + root.getMessage());
-                                                        }
+                        return functionObservable
+                                .first(function -> function.getClass()
+                                        .getName().equals(beanName))
+                                .flatMap(
+                                        function -> {
+                                            Object result;
+                                            try {
+                                                result = MethodUtils
+                                                        .invokeMethod(
+                                                                function,
+                                                                requestMessage
+                                                                        .getMethodName(),
+                                                                requestMessage
+                                                                        .getArguments());
+                                            } catch (Throwable e) {
+                                                LOGGER.error(
+                                                        "Invoke service method exception",
+                                                        e);
+                                                Throwable root = getRootCause(e);
+                                                result = new InvokeError(
+                                                        null == root
+                                                                ? "Cannot find root cause exception"
+                                                                : root.getClass().getName()
+                                                                + ":" + root.getMessage());
+                                            }
 
-                                                        ResponseMessage responseMessage = ResponseMessage
-                                                                .newBuilder()
-                                                                .withMessageType(MessageType.RESPONSE)
-                                                                .withSerializerType(requestMessage
-                                                                        .getSerializerType())
-                                                                .withOpaque(requestMessage.getOpaque())
-                                                                .withResult(result)
-                                                                .build();
+                                            ResponseMessage responseMessage = ResponseMessage
+                                                    .newBuilder()
+                                                    .withMessageType(MessageType.RESPONSE)
+                                                    .withSerializerType(requestMessage
+                                                            .getSerializerType())
+                                                    .withOpaque(requestMessage.getOpaque())
+                                                    .withResult(result)
+                                                    .build();
 
-                                                        return newConnection
-                                                                .writeAndFlushOnEach(just(responseMessage));
-                                                    });
-                                }));
+                                            return just(responseMessage);
+                                        });
+                    });
+
     }
 
     /**
@@ -138,7 +138,7 @@ public abstract class Vineyard {
                             VineyardCodecAdapter::new);
 
             @Override
-            public Single<ResponseMessage> call(RequestMessage message) {
+            public Observable<ResponseMessage> call(RequestMessage message) {
                 ReplaySubject<ResponseMessage> response = ReplaySubject.create();
                 req2Res.putIfAbsent(message.getOpaque(), response);
 
@@ -155,7 +155,7 @@ public abstract class Vineyard {
                                     responseMessageReplaySubject.onCompleted();
                                 });
 
-                return response.toSingle();
+                return response;
             }
         };
     }

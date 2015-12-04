@@ -14,6 +14,7 @@
 
 package io.grapebaba;
 
+import rx.Observable;
 import rx.Single;
 import rx.functions.Func1;
 
@@ -23,5 +24,5 @@ import rx.functions.Func1;
  * @param <Req> input
  * @param <Res> output
  */
-public interface Service<Req, Res> extends Func1<Req, Single<Res>> {
+public interface Service<Req, Res> extends Func1<Req, Observable<Res>> {
 }
