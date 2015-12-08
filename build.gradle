@@ -1,92 +1,97 @@
-apply plugin: 'idea'
-apply plugin: 'eclipse'
-apply plugin: 'java'
-apply plugin: 'checkstyle'
+allprojects{
+    apply plugin: 'idea'
+    apply plugin: 'eclipse'
+}
 
-idea {
-    project {
-        jdkName = JavaVersion.VERSION_1_8
-        languageLevel = JavaVersion.VERSION_1_8
+project(':') {
+    idea {
+        project {
+            jdkName = JavaVersion.VERSION_1_8
+            languageLevel = JavaVersion.VERSION_1_8
 
-        ipr.withXml { xml ->
-            def mapping = xml.node.component.find { it.@name == "VcsDirectoryMappings" }.mapping
-            // mapping.@vcs = 'Git'
-            mapping.@directory = '$PROJECT_DIR$'
+            ipr.withXml { xml ->
+                def mapping = xml.node.component.find { it.@name == "VcsDirectoryMappings" }.mapping
+                // mapping.@vcs = 'Git'
+                mapping.@directory = '$PROJECT_DIR$'
+            }
+        }
+
+        workspace.iws.withXml { provider ->
+            def junitDefaults = provider.node.component.find {
+                it.@name == 'RunManager'
+            }.configuration.find {
+                it.@type == 'JUnit'
+            }
+            junitDefaults.option.find { it.@name == 'WORKING_DIRECTORY' }.@value = '$MODULE_DIR$'
         }
     }
 
-    workspace.iws.withXml { provider ->
-        def junitDefaults = provider.node.component.find {
-            it.@name == 'RunManager'
-        }.configuration.find {
-            it.@type == 'JUnit'
+    eclipse {
+        classpath {
+            containers.remove('org.eclipse.jdt.launching.JRE_CONTAINER')
+            containers 'org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8'
         }
-        junitDefaults.option.find { it.@name == 'WORKING_DIRECTORY' }.@value = '$MODULE_DIR$'
     }
 }
 
-eclipse {
-    classpath {
-        containers.remove('org.eclipse.jdt.launching.JRE_CONTAINER')
-        containers 'org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8'
+subprojects {
+    apply plugin: 'java'
+   // apply plugin: 'checkstyle'
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+
+    [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+
+    tasks.withType(JavaCompile) {
+        options.compilerArgs << "-Xlint:unchecked"
+        options.compilerArgs << "-Xlint:deprecation"
     }
-}
 
-sourceCompatibility = JavaVersion.VERSION_1_8
-targetCompatibility = JavaVersion.VERSION_1_8
+    repositories {
+        mavenCentral()
+        maven { url 'https://oss.jfrog.org/libs-snapshot' }
+        maven { url 'http://clinker.netty.io/nexus/content/repositories/snapshots' }
+    }
 
-[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+    ext {
+        guavaVersion = '18.0'
+        junitVersion = '4.12'
+        hamcrestVersion = '1.3'
+        mockitoVersion = '1.10.19'
+        slf4jVersion = '1.7.12'
+        logbackVersion = '1.1.3'
+        rxnettyVersion = '0.5.0-SNAPSHOT'
+        kryoVersion = '3.0.2'
+        kryoSerializerVersion = '0.33'
+        fstVersion = '2.33'
+        commonLang3Version = '3.4'
+        ocelliVersion = '0.2.0-SNAPSHOT'
+    }
 
-tasks.withType(JavaCompile) {
-    options.compilerArgs << "-Xlint:unchecked"
-    options.compilerArgs << "-Xlint:deprecation"
-}
+    it.dependencies {
+        compile("com.google.guava:guava:$guavaVersion",
+                "org.slf4j:slf4j-api:$slf4jVersion",
+                "org.slf4j:jcl-over-slf4j:$slf4jVersion",
+                "ch.qos.logback:logback-classic:$logbackVersion",
+                "io.reactivex:rxnetty:$rxnettyVersion",
+                "com.esotericsoftware:kryo:$kryoVersion",
+                "de.javakaffee:kryo-serializers:$kryoSerializerVersion",
+                "de.ruedigermoeller:fst:$fstVersion",
+                "org.apache.commons:commons-lang3:$commonLang3Version",
+                "com.netflix.ocelli:ocelli-rxnetty:$ocelliVersion"
+        )
 
-repositories {
-    mavenCentral()
-    maven { url 'https://oss.jfrog.org/libs-snapshot' }
-    maven { url 'http://clinker.netty.io/nexus/content/repositories/snapshots' }
+        testCompile("junit:junit:$junitVersion",
+                "org.hamcrest:hamcrest-all:$hamcrestVersion",
+                "org.mockito:mockito-core:$mockitoVersion"
+        )
 
-}
+    }
 
-ext {
-    guavaVersion = '18.0'
-    junitVersion = '4.12'
-    hamcrestVersion = '1.3'
-    mockitoVersion = '1.10.19'
-    slf4jVersion = '1.7.12'
-    logbackVersion = '1.1.3'
-    rxnettyVersion = '0.5.0-SNAPSHOT'
-    kryoVersion = '3.0.2'
-    kryoSerializerVersion = '0.33'
-    fstVersion = '2.33'
-    commonLang3Version = '3.4'
-    ocelliVersion = '0.2.0-SNAPSHOT'
-}
-
-dependencies {
-    compile("com.google.guava:guava:$guavaVersion",
-            "org.slf4j:slf4j-api:$slf4jVersion",
-            "org.slf4j:jcl-over-slf4j:$slf4jVersion",
-            "ch.qos.logback:logback-classic:$logbackVersion",
-            "io.reactivex:rxnetty:$rxnettyVersion",
-            "com.esotericsoftware:kryo:$kryoVersion",
-            "de.javakaffee:kryo-serializers:$kryoSerializerVersion",
-            "de.ruedigermoeller:fst:$fstVersion",
-            "org.apache.commons:commons-lang3:$commonLang3Version",
-            "com.netflix.ocelli:ocelli-rxnetty:$ocelliVersion"
-    )
-
-    testCompile("junit:junit:$junitVersion",
-            "org.hamcrest:hamcrest-all:$hamcrestVersion",
-            "org.mockito:mockito-core:$mockitoVersion"
-    )
-
-}
-
-checkstyle {
-    configFile = file("$rootProject.projectDir/code_quality/checkstyle/google_checks.xml")
-    toolVersion = '6.12.1'
+//    checkstyle {
+//        configFile = file("$rootProject.projectDir/code_quality/checkstyle/google_checks.xml")
+//        toolVersion = '6.12.1'
+//    }
 }
 
 task wrapper(type: Wrapper) {

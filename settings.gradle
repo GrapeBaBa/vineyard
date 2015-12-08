@@ -1,1 +1,5 @@
 rootProject.name = 'vineyard'
+
+include 'vineyard-core'
+include 'vineyard-grape'
+
