@@ -10,6 +10,7 @@ import io.netty.channel.ChannelPipeline;
 import io.netty.handler.logging.LogLevel;
 import io.netty.util.concurrent.EventExecutorGroup;
 import io.reactivex.netty.protocol.tcp.client.ConnectionProvider;
+import io.reactivex.netty.protocol.tcp.client.ConnectionRequest;
 import io.reactivex.netty.protocol.tcp.client.TcpClient;
 import io.reactivex.netty.protocol.tcp.client.TcpClientImpl;
 import io.reactivex.netty.protocol.tcp.client.events.TcpClientEventListener;
@@ -32,6 +33,11 @@ public class VineyardClientImpl<W,R> extends VineyardClient<W,R> {
     @Override
     public Service<W, R> createService(ServiceFactory<W,R> serviceFactory) {
         return serviceFactory.create(this);
+    }
+
+    @Override
+    public ConnectionRequest<W, R> createConnectionRequest() {
+        return client.createConnectionRequest();
     }
 
     @Override

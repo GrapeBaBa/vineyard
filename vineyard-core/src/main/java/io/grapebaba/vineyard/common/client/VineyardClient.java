@@ -11,6 +11,7 @@ import io.netty.handler.logging.LogLevel;
 import io.netty.util.concurrent.EventExecutorGroup;
 import io.reactivex.netty.events.EventSource;
 import io.reactivex.netty.protocol.tcp.client.ConnectionProvider;
+import io.reactivex.netty.protocol.tcp.client.ConnectionRequest;
 import io.reactivex.netty.protocol.tcp.client.TcpClient;
 import io.reactivex.netty.protocol.tcp.client.TcpClientImpl;
 import io.reactivex.netty.protocol.tcp.client.events.TcpClientEventListener;
@@ -30,7 +31,9 @@ import static rx.Observable.just;
 import static rx.Observable.never;
 
 public abstract class VineyardClient<W,R> implements EventSource<TcpClientEventListener> {
-    public abstract Service<W, R> createService(ServiceFactory<W,R> serviceFactory) ;
+    public abstract Service<W, R> createService(ServiceFactory<W,R> serviceFactory);
+
+    public abstract ConnectionRequest<W, R> createConnectionRequest();
 
     public abstract  <T> VineyardClient<W, R> channelOption(ChannelOption<T> option, T value);
 

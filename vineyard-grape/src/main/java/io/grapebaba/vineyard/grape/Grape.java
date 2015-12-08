@@ -15,13 +15,12 @@
 package io.grapebaba.vineyard.grape;
 
 import io.grapebaba.vineyard.common.Service;
-import io.grapebaba.vineyard.common.ServiceFactory;
 import io.grapebaba.vineyard.common.client.VineyardClient;
-import io.grapebaba.vineyard.common.server.VineyardServer;
 import io.grapebaba.vineyard.common.codec.packet.PacketDecoder;
 import io.grapebaba.vineyard.common.codec.packet.PacketEncoder;
-import io.grapebaba.vineyard.grape.codec.grape.GrapeCodecAdapter;
 import io.grapebaba.vineyard.common.protocol.packet.Packet;
+import io.grapebaba.vineyard.common.server.VineyardServer;
+import io.grapebaba.vineyard.grape.codec.grape.GrapeCodecAdapter;
 import io.grapebaba.vineyard.grape.protocol.grape.RequestMessage;
 import io.grapebaba.vineyard.grape.protocol.grape.ResponseMessage;
 import io.grapebaba.vineyard.grape.service.GrapeClientService;
@@ -74,12 +73,6 @@ public abstract class Grape {
                 .<Packet,ByteBuf>addChannelHandlerLast(PacketEncoder.class.getName(),
                         PacketEncoder::new)
                 .<RequestMessage,ResponseMessage>addChannelHandlerLast(GrapeCodecAdapter.class.getName(),
-                        GrapeCodecAdapter::new).createService(new ServiceFactory<RequestMessage, ResponseMessage>() {
-                    @Override
-                    public Service<RequestMessage, ResponseMessage> create(VineyardClient<RequestMessage, ResponseMessage> client) {
-                        return null;
-                    }
-                })
-
+                        GrapeCodecAdapter::new).createService(GrapeClientService::new);
     }
 }
