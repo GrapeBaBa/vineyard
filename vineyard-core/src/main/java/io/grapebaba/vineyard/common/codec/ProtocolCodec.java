@@ -12,7 +12,7 @@
  * the License.
  */
 
-package io.grapebaba.vineyard.common.protocol;
+package io.grapebaba.vineyard.common.codec;
 
 import io.netty.buffer.ByteBuf;
 

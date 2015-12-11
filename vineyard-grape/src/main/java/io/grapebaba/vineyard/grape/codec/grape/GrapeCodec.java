@@ -16,7 +16,7 @@ package io.grapebaba.vineyard.grape.codec.grape;
 
 import io.grapebaba.vineyard.common.serializer.SerializerType;
 import io.grapebaba.vineyard.grape.protocol.MessageType;
-import io.grapebaba.vineyard.common.protocol.ProtocolCodec;
+import io.grapebaba.vineyard.common.codec.ProtocolCodec;
 import io.grapebaba.vineyard.grape.protocol.grape.GrapeMessage;
 import io.grapebaba.vineyard.grape.protocol.grape.RequestMessage;
 import io.grapebaba.vineyard.grape.protocol.grape.ResponseMessage;

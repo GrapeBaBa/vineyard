@@ -33,7 +33,7 @@ public class GrapeClientService implements Service<RequestMessage,ResponseMessag
                 .subscribe(
                         responseMessage -> {
                             ReplaySubject<ResponseMessage> responseMessageReplaySubject = req2Res
-                                    .get(message.getOpaque());
+                                    .remove(message.getOpaque());
                             responseMessageReplaySubject.onNext(responseMessage);
                             responseMessageReplaySubject.onCompleted();
                         });
