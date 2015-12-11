@@ -66,6 +66,7 @@ subprojects {
         fstVersion = '2.33'
         commonLang3Version = '3.4'
         ocelliVersion = '0.2.0-SNAPSHOT'
+        dropwizzardMetricsVersion='3.1.2'
     }
 
     it.dependencies {
@@ -78,7 +79,8 @@ subprojects {
                 "de.javakaffee:kryo-serializers:$kryoSerializerVersion",
                 "de.ruedigermoeller:fst:$fstVersion",
                 "org.apache.commons:commons-lang3:$commonLang3Version",
-                "com.netflix.ocelli:ocelli-rxnetty:$ocelliVersion"
+                "com.netflix.ocelli:ocelli-rxnetty:$ocelliVersion",
+                'io.dropwizard.metrics:metrics-core:3.1.2'
         )
 
         testCompile("junit:junit:$junitVersion",
