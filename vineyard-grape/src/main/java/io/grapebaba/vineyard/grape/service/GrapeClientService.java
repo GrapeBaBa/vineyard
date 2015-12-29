@@ -10,14 +10,13 @@ import rx.subjects.ReplaySubject;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-public class GrapeClientService implements Service<RequestMessage,ResponseMessage> {
-
+public class GrapeClientService implements Service<RequestMessage, ResponseMessage> {
     private final ConcurrentMap<Integer, ReplaySubject<ResponseMessage>> req2Res = new ConcurrentHashMap<>();
 
     private final VineyardClient<RequestMessage, ResponseMessage> client;
 
-    public GrapeClientService(VineyardClient<RequestMessage,ResponseMessage> client) {
-        this.client=client;
+    public GrapeClientService(VineyardClient<RequestMessage, ResponseMessage> client) {
+        this.client = client;
     }
 
     @Override

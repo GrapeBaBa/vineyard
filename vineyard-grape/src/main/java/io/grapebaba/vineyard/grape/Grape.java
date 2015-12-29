@@ -14,12 +14,16 @@
 
 package io.grapebaba.vineyard.grape;
 
+import com.google.common.collect.Lists;
 import io.grapebaba.vineyard.common.Service;
+import io.grapebaba.vineyard.common.ServiceFactory;
+import io.grapebaba.vineyard.common.StackService;
 import io.grapebaba.vineyard.common.client.VineyardClient;
 import io.grapebaba.vineyard.common.codec.packet.PacketDecoder;
 import io.grapebaba.vineyard.common.codec.packet.PacketEncoder;
 import io.grapebaba.vineyard.common.protocol.packet.Packet;
 import io.grapebaba.vineyard.common.server.VineyardServer;
+import io.grapebaba.vineyard.common.stat.StatFilter;
 import io.grapebaba.vineyard.grape.codec.grape.GrapeCodecAdapter;
 import io.grapebaba.vineyard.grape.protocol.grape.RequestMessage;
 import io.grapebaba.vineyard.grape.protocol.grape.ResponseMessage;
@@ -32,6 +36,8 @@ import rx.Observable;
 import rx.functions.Function;
 
 import java.net.SocketAddress;
+
+import static com.google.common.collect.Lists.newArrayList;
 
 
 /**
@@ -47,14 +53,14 @@ public abstract class Grape {
      * @param functionObservable A set of function objects
      * @return tcpServer
      */
-    @SuppressWarnings({"rawtypes" })
-    public static VineyardServer<RequestMessage,ResponseMessage> serve(SocketAddress socketAddress,
-                                                                       Observable<Function> functionObservable) {
+    @SuppressWarnings({"rawtypes"})
+    public static VineyardServer<RequestMessage, ResponseMessage> serve(SocketAddress socketAddress,
+                                                                        Observable<Function> functionObservable) {
         return VineyardServer
                 .newServer(socketAddress)
-                .<ByteBuf,Packet>addChannelHandlerLast(PacketDecoder.class.getName(), PacketDecoder::new)
-                .<Packet,ByteBuf>addChannelHandlerLast(PacketEncoder.class.getName(), PacketEncoder::new)
-                .<RequestMessage,ResponseMessage>addChannelHandlerLast(GrapeCodecAdapter.class.getName(),
+                .<ByteBuf, Packet>addChannelHandlerLast(PacketDecoder.class.getName(), PacketDecoder::new)
+                .<Packet, ByteBuf>addChannelHandlerLast(PacketEncoder.class.getName(), PacketEncoder::new)
+                .<RequestMessage, ResponseMessage>addChannelHandlerLast(GrapeCodecAdapter.class.getName(),
                         GrapeCodecAdapter::new)
                 .start(new GrapeServerService(functionObservable));
     }
@@ -65,14 +71,18 @@ public abstract class Grape {
      * @param socketAddresses input
      * @return a client
      */
+    @SuppressWarnings("unchecked")
     public static Service<RequestMessage, ResponseMessage> newClient(
             SocketAddress... socketAddresses) {
         return VineyardClient.newClient(socketAddresses)
-                .<ByteBuf,Packet>addChannelHandlerLast(PacketDecoder.class.getName(),
+                .<ByteBuf, Packet>addChannelHandlerLast(PacketDecoder.class.getName(),
                         PacketDecoder::new)
-                .<Packet,ByteBuf>addChannelHandlerLast(PacketEncoder.class.getName(),
+                .<Packet, ByteBuf>addChannelHandlerLast(PacketEncoder.class.getName(),
                         PacketEncoder::new)
-                .<RequestMessage,ResponseMessage>addChannelHandlerLast(GrapeCodecAdapter.class.getName(),
-                        GrapeCodecAdapter::new).createService(GrapeClientService::new);
+                .<RequestMessage, ResponseMessage>addChannelHandlerLast(GrapeCodecAdapter.class.getName(),
+                        GrapeCodecAdapter::new)
+                .createService(client ->
+                        new StackService<>(newArrayList(new StatFilter<>()),
+                                new GrapeClientService(client)));
     }
 }

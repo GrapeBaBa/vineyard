@@ -12,14 +12,14 @@
  * the License.
  */
 
-package io.grapebaba.vineyard.common;
+package io.grapebaba.vineyard.grape;
 
 import java.io.Serializable;
 
 /**
  * A common exception for invoking.
  */
-public class InvokeError implements Serializable {
+public class ErrorResponse implements Serializable {
 
     private static final long serialVersionUID = 1595122947615981480L;
 
@@ -28,14 +28,14 @@ public class InvokeError implements Serializable {
     /**
      * Default constructor.
      */
-    public InvokeError() {
+    public ErrorResponse() {
         super();
     }
 
     /**
      * Constructor with error message.
      */
-    public InvokeError(String msg) {
+    public ErrorResponse(String msg) {
         this.msg = msg;
     }
 

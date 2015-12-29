@@ -1,6 +1,6 @@
 package io.grapebaba.vineyard.grape.service;
 
-import io.grapebaba.vineyard.common.InvokeError;
+import io.grapebaba.vineyard.grape.ErrorResponse;
 import io.grapebaba.vineyard.common.Service;
 import io.grapebaba.vineyard.grape.protocol.MessageType;
 import io.grapebaba.vineyard.grape.protocol.grape.RequestMessage;
@@ -46,7 +46,7 @@ public class GrapeServerService implements Service<RequestMessage,ResponseMessag
                                         "Invoke service method exception",
                                         e);
                                 Throwable root = getRootCause(e);
-                                result = new InvokeError(
+                                result = new ErrorResponse(
                                         null == root
                                                 ? "Cannot find root cause exception"
                                                 : root.getClass().getName()
