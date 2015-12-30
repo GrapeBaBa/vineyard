@@ -21,8 +21,9 @@ import io.grapebaba.vineyard.common.codec.packet.PacketDecoder;
 import io.grapebaba.vineyard.common.codec.packet.PacketEncoder;
 import io.grapebaba.vineyard.common.protocol.packet.Packet;
 import io.grapebaba.vineyard.common.server.VineyardServer;
-import io.grapebaba.vineyard.common.stat.StatFilter;
+import io.grapebaba.vineyard.common.metrics.StatFilter;
 import io.grapebaba.vineyard.grape.codec.grape.GrapeCodecAdapter;
+import io.grapebaba.vineyard.grape.metrics.GrapeStatFIlter;
 import io.grapebaba.vineyard.grape.protocol.grape.RequestMessage;
 import io.grapebaba.vineyard.grape.protocol.grape.ResponseMessage;
 import io.grapebaba.vineyard.grape.service.GrapeClientService;
@@ -80,7 +81,7 @@ public abstract class Grape {
                 .<RequestMessage, ResponseMessage>addChannelHandlerLast(GrapeCodecAdapter.class.getName(),
                         GrapeCodecAdapter::new)
                 .createService(client ->
-                        new StackService<>(just(new StatFilter<>()),
+                        new StackService<>(just(new StatFilter<>(), new GrapeStatFIlter()),
                                 new GrapeClientService(client)));
     }
 }

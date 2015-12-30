@@ -1,8 +1,7 @@
-package io.grapebaba.vineyard.common.stat;
+package io.grapebaba.vineyard.common.metrics;
 
 import com.codahale.metrics.Counter;
 import io.grapebaba.vineyard.common.Filter;
-import io.grapebaba.vineyard.common.Metrics;
 import io.grapebaba.vineyard.common.Service;
 import rx.Observable;
 

@@ -1,4 +1,4 @@
-package io.grapebaba.vineyard.common;
+package io.grapebaba.vineyard.common.metrics;
 
 import com.codahale.metrics.ConsoleReporter;
 import com.codahale.metrics.MetricRegistry;
