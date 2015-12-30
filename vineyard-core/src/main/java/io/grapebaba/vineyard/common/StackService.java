@@ -3,19 +3,17 @@ package io.grapebaba.vineyard.common;
 import rx.Observable;
 
 import java.util.Iterator;
-import java.util.List;
 
 /**
- *
  * @param <Req>
  * @param <Res>
  */
 public class StackService<Req, Res> implements Service<Req, Res> {
-    private final List<Filter<Req, Res>> filters;
+    private final Observable<Filter<Req, Res>> filters;
 
     private final Service<Req, Res> service;
 
-    public StackService(List<Filter<Req, Res>> filters, Service<Req, Res> service) {
+    public StackService(Observable<Filter<Req, Res>> filters, Service<Req, Res> service) {
         this.filters = filters;
         this.service = service;
     }
@@ -43,10 +41,12 @@ public class StackService<Req, Res> implements Service<Req, Res> {
 
     @Override
     public Observable<Res> call(Req req) {
-        if (filters.isEmpty()) {
-            return service.call(req);
+        Iterator<Filter<Req, Res>> iterator = filters.toBlocking().getIterator();
+
+        if (iterator.hasNext()) {
+            return new ChainedService<>(iterator, service).call(req);
         } else {
-            return new ChainedService<>(filters.iterator(), service).call(req);
+            return service.call(req);
         }
     }
 

@@ -14,9 +14,7 @@
 
 package io.grapebaba.vineyard.grape;
 
-import com.google.common.collect.Lists;
 import io.grapebaba.vineyard.common.Service;
-import io.grapebaba.vineyard.common.ServiceFactory;
 import io.grapebaba.vineyard.common.StackService;
 import io.grapebaba.vineyard.common.client.VineyardClient;
 import io.grapebaba.vineyard.common.codec.packet.PacketDecoder;
@@ -37,7 +35,7 @@ import rx.functions.Function;
 
 import java.net.SocketAddress;
 
-import static com.google.common.collect.Lists.newArrayList;
+import static rx.Observable.just;
 
 
 /**
@@ -82,7 +80,7 @@ public abstract class Grape {
                 .<RequestMessage, ResponseMessage>addChannelHandlerLast(GrapeCodecAdapter.class.getName(),
                         GrapeCodecAdapter::new)
                 .createService(client ->
-                        new StackService<>(newArrayList(new StatFilter<>()),
+                        new StackService<>(just(new StatFilter<>()),
                                 new GrapeClientService(client)));
     }
 }
