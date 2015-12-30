@@ -29,7 +29,13 @@ import rx.functions.Func1;
 import rx.functions.Function;
 
 import java.net.InetSocketAddress;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * A unit test for vineyard protocol.
@@ -40,11 +46,13 @@ public class VineyardTest {
      */
     @SuppressWarnings("rawtypes")
     @Test
-    public void normal() {
+    public void normal() throws Exception {
         final int port = 8076;
         final int timeout = 200;
         final int opaque = 9999;
-        final long waitingTime = 3L;
+        final long waitingTime = 20L;
+        final AtomicReference<Object> result = new AtomicReference<>();
+        final CountDownLatch latch = new CountDownLatch(1);
         VineyardServer server = Grape.serve(new InetSocketAddress(port),
                 Observable.just(new TestFunc()));
 
@@ -59,10 +67,12 @@ public class VineyardTest {
                         .build();
 
         client.call(requestMessage).subscribe(responseMessage -> {
-            System.out.println(responseMessage.getResult());
+            result.set(responseMessage.getResult());
+            latch.countDown();
         });
 
-        server.awaitShutdown(waitingTime, TimeUnit.SECONDS);
+        assertTrue(latch.await(waitingTime, TimeUnit.SECONDS));
+        assertEquals("grape", result.get());
     }
 
     /**
@@ -70,11 +80,13 @@ public class VineyardTest {
      */
     @SuppressWarnings("rawtypes")
     @Test
-    public void testException() {
+    public void testException() throws Exception {
         final int port = 8077;
         final int timeout = 200;
         final int opaque = 9999;
-        final long waitingTime = 3L;
+        final long waitingTime = 10L;
+        final AtomicReference<Object> result = new AtomicReference<>();
+        final CountDownLatch latch = new CountDownLatch(1);
         VineyardServer server = Grape.serve(new InetSocketAddress(port),
                 Observable.just(new TestThrowable()));
 
@@ -89,10 +101,12 @@ public class VineyardTest {
                         .build();
 
         client.call(requestMessage).subscribe(responseMessage -> {
-            System.out.println(((ErrorResponse) responseMessage.getResult()).getMsg());
+            result.set(responseMessage.getResult());
+            latch.countDown();
         });
 
-        server.awaitShutdown(waitingTime, TimeUnit.SECONDS);
+        assertTrue(latch.await(waitingTime, TimeUnit.SECONDS));
+        assertTrue(result.get() instanceof ErrorResponse);
     }
 
     /**
@@ -100,11 +114,13 @@ public class VineyardTest {
      */
     @SuppressWarnings("rawtypes")
     @Test
-    public void testVoidFunction() {
+    public void testVoidFunction() throws Exception {
         final int port = 8078;
         final int timeout = 200;
         final int opaque = 9999;
-        final long waitingTime = 3L;
+        final long waitingTime = 10L;
+        final AtomicReference<Object> result = new AtomicReference<>();
+        final CountDownLatch latch = new CountDownLatch(1);
         VineyardServer server = Grape.serve(new InetSocketAddress(port),
                 Observable.just(new TestVoidFunction()));
 
@@ -120,11 +136,13 @@ public class VineyardTest {
                         .build();
 
         client.call(requestMessage).subscribe(responseMessage -> {
-            System.out.println(responseMessage.getResult());
-            System.out.println(responseMessage.getOpaque());
+            result.set(responseMessage);
+            latch.countDown();
         });
 
-        server.awaitShutdown(waitingTime, TimeUnit.SECONDS);
+        assertTrue(latch.await(waitingTime, TimeUnit.SECONDS));
+        assertNull(((ResponseMessage) result.get()).getResult());
+        assertEquals(new Integer(9999), ((ResponseMessage) result.get()).getOpaque());
     }
 
     /**

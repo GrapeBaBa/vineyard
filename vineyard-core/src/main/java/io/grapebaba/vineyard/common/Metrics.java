@@ -10,6 +10,6 @@ public abstract class Metrics {
 
     static {
         ConsoleReporter reporter = ConsoleReporter.forRegistry(REGISTRY).build();
-        reporter.start(3L, TimeUnit.SECONDS);
+        reporter.start(300L, TimeUnit.MILLISECONDS);
     }
 }
