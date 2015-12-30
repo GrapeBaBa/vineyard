@@ -43,7 +43,7 @@ import java.util.concurrent.TimeUnit;
  * @param <W>
  * @param <R>
  */
-public class VineyardClientImpl<W,R> extends VineyardClient<W,R> {
+public final class VineyardClientImpl<W, R> extends VineyardClient<W, R> {
     private final TcpClient<W, R> client;
 
     private VineyardClientImpl(TcpClient<W, R> client) {
@@ -51,7 +51,7 @@ public class VineyardClientImpl<W,R> extends VineyardClient<W,R> {
     }
 
     @Override
-    public Service<W, R> createService(ServiceFactory<W,R> serviceFactory) {
+    public Service<W, R> createService(ServiceFactory<W, R> serviceFactory) {
         return serviceFactory.create(this);
     }
 
@@ -62,7 +62,7 @@ public class VineyardClientImpl<W,R> extends VineyardClient<W,R> {
 
     @Override
     public <T> VineyardClient<W, R> channelOption(ChannelOption<T> option, T value) {
-        return copy(client.channelOption(option,value));
+        return copy(client.channelOption(option, value));
     }
 
     @Override
@@ -76,7 +76,8 @@ public class VineyardClientImpl<W,R> extends VineyardClient<W,R> {
     }
 
     @Override
-    public <WW, RR> VineyardClient<WW, RR> addChannelHandlerFirst(EventExecutorGroup group, String name, Func0<ChannelHandler> handlerFactory) {
+    public <WW, RR> VineyardClient<WW, RR> addChannelHandlerFirst(EventExecutorGroup group, String name,
+                                                                  Func0<ChannelHandler> handlerFactory) {
         return copy(VineyardClientImpl.castClient(client.addChannelHandlerFirst(group, name, handlerFactory)));
     }
 
@@ -86,28 +87,35 @@ public class VineyardClientImpl<W,R> extends VineyardClient<W,R> {
     }
 
     @Override
-    public <WW, RR> VineyardClient<WW, RR> addChannelHandlerLast(EventExecutorGroup group, String name, Func0<ChannelHandler> handlerFactory) {
+    public <WW, RR> VineyardClient<WW, RR> addChannelHandlerLast(EventExecutorGroup group, String name,
+                                                                 Func0<ChannelHandler> handlerFactory) {
         return copy(VineyardClientImpl.castClient(client.addChannelHandlerLast(group, name, handlerFactory)));
     }
 
     @Override
-    public <WW, RR> VineyardClient<WW, RR> addChannelHandlerBefore(String baseName, String name, Func0<ChannelHandler> handlerFactory) {
+    public <WW, RR> VineyardClient<WW, RR> addChannelHandlerBefore(String baseName, String name,
+                                                                   Func0<ChannelHandler> handlerFactory) {
         return copy(VineyardClientImpl.castClient(client.addChannelHandlerBefore(baseName, name, handlerFactory)));
     }
 
     @Override
-    public <WW, RR> VineyardClient<WW, RR> addChannelHandlerBefore(EventExecutorGroup group, String baseName, String name, Func0<ChannelHandler> handlerFactory) {
-        return copy(VineyardClientImpl.castClient(client.addChannelHandlerBefore(group, baseName, name, handlerFactory)));
+    public <WW, RR> VineyardClient<WW, RR> addChannelHandlerBefore(EventExecutorGroup group, String baseName,
+                                                                   String name, Func0<ChannelHandler> handlerFactory) {
+        return copy(VineyardClientImpl.castClient(client.addChannelHandlerBefore(
+                group, baseName, name, handlerFactory)));
     }
 
     @Override
-    public <WW, RR> VineyardClient<WW, RR> addChannelHandlerAfter(String baseName, String name, Func0<ChannelHandler> handlerFactory) {
+    public <WW, RR> VineyardClient<WW, RR> addChannelHandlerAfter(String baseName, String name,
+                                                                  Func0<ChannelHandler> handlerFactory) {
         return copy(VineyardClientImpl.castClient(client.addChannelHandlerAfter(baseName, name, handlerFactory)));
     }
 
     @Override
-    public <WW, RR> VineyardClient<WW, RR> addChannelHandlerAfter(EventExecutorGroup group, String baseName, String name, Func0<ChannelHandler> handlerFactory) {
-        return copy(VineyardClientImpl.castClient(client.addChannelHandlerAfter(group, baseName, name, handlerFactory)));
+    public <WW, RR> VineyardClient<WW, RR> addChannelHandlerAfter(EventExecutorGroup group, String baseName,
+                                                                  String name, Func0<ChannelHandler> handlerFactory) {
+        return copy(VineyardClientImpl.castClient(
+                client.addChannelHandlerAfter(group, baseName, name, handlerFactory)));
     }
 
     @Override
@@ -145,14 +153,21 @@ public class VineyardClientImpl<W,R> extends VineyardClient<W,R> {
         return client.subscribe(listener);
     }
 
-    public static VineyardClient<ByteBuf, ByteBuf> create(final ConnectionProvider<ByteBuf, ByteBuf> connectionProvider) {
+    /**
+     * Create a client instance.
+     *
+     * @param connectionProvider connection provider
+     * @return a new client instance
+     */
+    public static VineyardClient<ByteBuf, ByteBuf> create(
+            final ConnectionProvider<ByteBuf, ByteBuf> connectionProvider) {
         TcpClient<ByteBuf, ByteBuf> tcpClient = TcpClientImpl.create(connectionProvider);
         return new VineyardClientImpl<>(tcpClient);
     }
 
     @SuppressWarnings("unchecked")
-    private static <WW,RR> TcpClient<WW, RR> castClient(TcpClient<?, ?> rawTypes) {
-        return (TcpClient<WW,RR>) rawTypes;
+    private static <WW, RR> TcpClient<WW, RR> castClient(TcpClient<?, ?> rawTypes) {
+        return (TcpClient<WW, RR>) rawTypes;
     }
 
     private <WW, RR> VineyardClientImpl<WW, RR> copy(TcpClient<WW, RR> newClient) {

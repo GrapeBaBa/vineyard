@@ -5,6 +5,8 @@ import rx.Observable;
 import java.util.Iterator;
 
 /**
+ * A Composition service for chaining filters and service.
+ *
  * @param <Req>
  * @param <Res>
  */
@@ -13,6 +15,12 @@ public class StackService<Req, Res> implements Service<Req, Res> {
 
     private final Service<Req, Res> service;
 
+    /**
+     * Constructor.
+     *
+     * @param filters filters
+     * @param service service
+     */
     public StackService(Observable<Filter<Req, Res>> filters, Service<Req, Res> service) {
         this.filters = filters;
         this.service = service;
@@ -23,7 +31,7 @@ public class StackService<Req, Res> implements Service<Req, Res> {
         private final Filter<Req, Res> filter;
         private final Service<Req, Res> service;
 
-        public ChainedService(Iterator<Filter<Req, Res>> filterIterator, Service<Req, Res> service) {
+        ChainedService(Iterator<Filter<Req, Res>> filterIterator, Service<Req, Res> service) {
             this.filterIterator = filterIterator;
             this.filter = filterIterator.next();
             this.service = service;

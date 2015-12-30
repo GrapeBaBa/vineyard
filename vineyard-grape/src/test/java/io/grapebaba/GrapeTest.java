@@ -40,7 +40,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * A unit test for vineyard protocol.
  */
-public class VineyardTest {
+public class GrapeTest {
     /**
      * A test for send and receive.
      */
@@ -63,7 +63,7 @@ public class VineyardTest {
                 RequestMessage.newBuilder().withSerializerType(SerializerType.JAVA)
                         .withArguments(new Object[]{"GRAPE"})
                         .withMessageType(MessageType.REQUEST).withMethodName("call")
-                        .withBeanName("io.grapebaba.VineyardTest$TestFunc").withTimeout(timeout).withOpaque(opaque)
+                        .withBeanName("io.grapebaba.GrapeTest$TestFunc").withTimeout(timeout).withOpaque(opaque)
                         .build();
 
         client.call(requestMessage).subscribe(responseMessage -> {
@@ -97,7 +97,7 @@ public class VineyardTest {
                 RequestMessage.newBuilder().withSerializerType(SerializerType.JAVA)
                         .withArguments(new Object[]{"GRAPE"})
                         .withMessageType(MessageType.REQUEST).withMethodName("testException")
-                        .withBeanName("io.grapebaba.VineyardTest$TestThrowable").withTimeout(timeout).withOpaque(opaque)
+                        .withBeanName("io.grapebaba.GrapeTest$TestThrowable").withTimeout(timeout).withOpaque(opaque)
                         .build();
 
         client.call(requestMessage).subscribe(responseMessage -> {
@@ -131,7 +131,7 @@ public class VineyardTest {
                 RequestMessage.newBuilder().withSerializerType(SerializerType.JAVA)
                         .withArguments(new Object[]{"GRAPE"})
                         .withMessageType(MessageType.REQUEST).withMethodName("testVoidFunction")
-                        .withBeanName("io.grapebaba.VineyardTest$TestVoidFunction")
+                        .withBeanName("io.grapebaba.GrapeTest$TestVoidFunction")
                         .withTimeout(timeout).withOpaque(opaque)
                         .build();
 

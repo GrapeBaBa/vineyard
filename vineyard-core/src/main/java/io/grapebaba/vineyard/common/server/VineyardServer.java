@@ -39,7 +39,7 @@ import java.util.concurrent.TimeUnit;
  * @param <R>
  * @param <W>
  */
-public abstract class VineyardServer<R,W> implements EventSource<TcpServerEventListener> {
+public abstract class VineyardServer<R, W> implements EventSource<TcpServerEventListener> {
 
     public abstract <T> VineyardServer<R, W> channelOption(ChannelOption<T> option, T value);
 
@@ -48,26 +48,26 @@ public abstract class VineyardServer<R,W> implements EventSource<TcpServerEventL
     public abstract <RR, WW> VineyardServer<RR, WW> addChannelHandlerFirst(String name, Func0<ChannelHandler> handlerFactory);
 
     public abstract <RR, WW> VineyardServer<RR, WW> addChannelHandlerFirst(EventExecutorGroup group, String name,
-                                                                      Func0<ChannelHandler> handlerFactory);
+                                                                           Func0<ChannelHandler> handlerFactory);
 
-    public abstract <RR, WW> VineyardServer<RR, WW>  addChannelHandlerLast(String name,
-                                                                      Func0<ChannelHandler> handlerFactory);
+    public abstract <RR, WW> VineyardServer<RR, WW> addChannelHandlerLast(String name,
+                                                                          Func0<ChannelHandler> handlerFactory);
 
     public abstract <RR, WW> VineyardServer<RR, WW> addChannelHandlerLast(EventExecutorGroup group, String name,
-                                                                     Func0<ChannelHandler> handlerFactory);
+                                                                          Func0<ChannelHandler> handlerFactory);
 
     public abstract <RR, WW> VineyardServer<RR, WW> addChannelHandlerBefore(String baseName, String name,
-                                                                       Func0<ChannelHandler> handlerFactory);
+                                                                            Func0<ChannelHandler> handlerFactory);
 
     public abstract <RR, WW> VineyardServer<RR, WW> addChannelHandlerBefore(EventExecutorGroup group, String baseName,
-                                                                       String name,
-                                                                       Func0<ChannelHandler> handlerFactory);
+                                                                            String name,
+                                                                            Func0<ChannelHandler> handlerFactory);
 
     public abstract <RR, WW> VineyardServer<RR, WW> addChannelHandlerAfter(String baseName, String name,
-                                                                      Func0<ChannelHandler> handlerFactory);
+                                                                           Func0<ChannelHandler> handlerFactory);
 
     public abstract <RR, WW> VineyardServer<RR, WW> addChannelHandlerAfter(EventExecutorGroup group, String baseName,
-                                                                      String name, Func0<ChannelHandler> handlerFactory);
+                                                                           String name, Func0<ChannelHandler> handlerFactory);
 
     public abstract <RR, WW> VineyardServer<RR, WW> pipelineConfigurator(Action1<ChannelPipeline> pipelineConfigurator);
 
@@ -85,7 +85,7 @@ public abstract class VineyardServer<R,W> implements EventSource<TcpServerEventL
 
     public abstract SocketAddress getServerAddress();
 
-    public abstract VineyardServer<R, W> start(Service<R,W> service);
+    public abstract VineyardServer<R, W> start(Service<R, W> service);
 
     public abstract void shutdown();
 
@@ -104,14 +104,14 @@ public abstract class VineyardServer<R,W> implements EventSource<TcpServerEventL
     }
 
     public static VineyardServer<ByteBuf, ByteBuf> newServer(int port, EventLoopGroup eventLoopGroup,
-                                                         Class<? extends ServerChannel> channelClass) {
+                                                             Class<? extends ServerChannel> channelClass) {
         return newServer(TcpServer.newServer(port, eventLoopGroup, eventLoopGroup, channelClass));
     }
 
 
     public static VineyardServer<ByteBuf, ByteBuf> newServer(int port, EventLoopGroup serverGroup,
-                                                         EventLoopGroup clientGroup,
-                                                         Class<? extends ServerChannel> channelClass) {
+                                                             EventLoopGroup clientGroup,
+                                                             Class<? extends ServerChannel> channelClass) {
         return newServer(TcpServer.newServer(port, serverGroup, clientGroup, channelClass));
     }
 
@@ -120,13 +120,13 @@ public abstract class VineyardServer<R,W> implements EventSource<TcpServerEventL
     }
 
     public static VineyardServer<ByteBuf, ByteBuf> newServer(SocketAddress socketAddress, EventLoopGroup eventLoopGroup,
-                                                         Class<? extends ServerChannel> channelClass) {
+                                                             Class<? extends ServerChannel> channelClass) {
         return newServer(TcpServer.newServer(socketAddress, eventLoopGroup, eventLoopGroup, channelClass));
     }
 
     public static VineyardServer<ByteBuf, ByteBuf> newServer(SocketAddress socketAddress, EventLoopGroup serverGroup,
-                                                         EventLoopGroup clientGroup,
-                                                         Class<? extends ServerChannel> channelClass) {
+                                                             EventLoopGroup clientGroup,
+                                                             Class<? extends ServerChannel> channelClass) {
         return newServer(TcpServer.newServer(socketAddress, serverGroup, clientGroup, channelClass));
     }
 
