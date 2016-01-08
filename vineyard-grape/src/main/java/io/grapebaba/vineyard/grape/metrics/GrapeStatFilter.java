@@ -27,7 +27,9 @@ import rx.Observable;
  */
 public class GrapeStatFilter implements Filter<RequestMessage, ResponseMessage> {
     @Override
-    public Observable<ResponseMessage> call(RequestMessage requestMessage, Service<RequestMessage, ResponseMessage> requestMessageResponseMessageService) {
+    public Observable<ResponseMessage> call(
+            RequestMessage requestMessage,
+            Service<RequestMessage, ResponseMessage> requestMessageResponseMessageService) {
         final String beanName = requestMessage.getBeanName();
         final String methodName = requestMessage.getMethodName();
         final String serviceName = beanName + "/" + methodName;

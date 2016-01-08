@@ -36,7 +36,7 @@ project(':') {
 
 subprojects {
     apply plugin: 'java'
-    //apply plugin: 'checkstyle'
+    apply plugin: 'checkstyle'
     sourceCompatibility = JavaVersion.VERSION_1_8
     targetCompatibility = JavaVersion.VERSION_1_8
 
@@ -90,10 +90,10 @@ subprojects {
 
     }
 
-//    checkstyle {
-//        configFile = file("$rootProject.projectDir/code_quality/checkstyle/google_checks.xml")
-//        toolVersion = '6.12.1'
-//    }
+    checkstyle {
+        configFile = file("$rootProject.projectDir/code_quality/checkstyle/google_checks.xml")
+        toolVersion = '6.12.1'
+    }
 }
 
 task wrapper(type: Wrapper) {
