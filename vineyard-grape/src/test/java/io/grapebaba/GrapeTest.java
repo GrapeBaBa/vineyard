@@ -15,6 +15,7 @@
 package io.grapebaba;
 
 import com.esotericsoftware.kryo.KryoException;
+import io.grapebaba.vineyard.common.Opaque;
 import io.grapebaba.vineyard.grape.ErrorResponse;
 import io.grapebaba.vineyard.common.Service;
 import io.grapebaba.vineyard.common.serializer.SerializerType;
@@ -33,6 +34,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
+import static io.grapebaba.vineyard.common.Opaque.next;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -49,7 +51,7 @@ public class GrapeTest {
     public void normal() throws Exception {
         final int port = 8076;
         final int timeout = 200;
-        final int opaque = 9999;
+        final int opaque = next();
         final long waitingTime = 20L;
         final AtomicReference<Object> result = new AtomicReference<>();
         final CountDownLatch latch = new CountDownLatch(1);
@@ -83,7 +85,7 @@ public class GrapeTest {
     public void testException() throws Exception {
         final int port = 8077;
         final int timeout = 200;
-        final int opaque = 9999;
+        final int opaque = next();
         final long waitingTime = 10L;
         final AtomicReference<Object> result = new AtomicReference<>();
         final CountDownLatch latch = new CountDownLatch(1);
@@ -117,7 +119,7 @@ public class GrapeTest {
     public void testVoidFunction() throws Exception {
         final int port = 8078;
         final int timeout = 200;
-        final int opaque = 9999;
+        final int opaque = next();
         final long waitingTime = 10L;
         final AtomicReference<Object> result = new AtomicReference<>();
         final CountDownLatch latch = new CountDownLatch(1);
@@ -142,7 +144,7 @@ public class GrapeTest {
 
         assertTrue(latch.await(waitingTime, TimeUnit.SECONDS));
         assertNull(((ResponseMessage) result.get()).getResult());
-        assertEquals(new Integer(9999), ((ResponseMessage) result.get()).getOpaque());
+        assertEquals(new Integer(opaque), ((ResponseMessage) result.get()).getOpaque());
     }
 
     /**
