@@ -70,7 +70,8 @@ public abstract class VineyardServer<R, W> implements EventSource<TcpServerEvent
      * @param handlerFactory factory to create handler instance to add
      * @return a new server instance
      */
-    public abstract <RR, WW> VineyardServer<RR, WW> addChannelHandlerFirst(String name, Func0<ChannelHandler> handlerFactory);
+    public abstract <RR, WW> VineyardServer<RR, WW> addChannelHandlerFirst(
+            String name, Func0<ChannelHandler> handlerFactory);
 
     /**
      * Adds a channelHandler.
@@ -148,8 +149,9 @@ public abstract class VineyardServer<R, W> implements EventSource<TcpServerEvent
      * @param handlerFactory factory to create handler instance to add
      * @return a new server instance
      */
-    public abstract <RR, WW> VineyardServer<RR, WW> addChannelHandlerAfter(EventExecutorGroup group, String baseName,
-                                                                           String name, Func0<ChannelHandler> handlerFactory);
+    public abstract <RR, WW> VineyardServer<RR, WW> addChannelHandlerAfter(
+            EventExecutorGroup group, String baseName,
+            String name, Func0<ChannelHandler> handlerFactory);
 
     /**
      * Creates a new server instances.

@@ -15,7 +15,6 @@
 package io.grapebaba;
 
 import com.esotericsoftware.kryo.KryoException;
-import io.grapebaba.vineyard.common.Opaque;
 import io.grapebaba.vineyard.grape.ErrorResponse;
 import io.grapebaba.vineyard.common.Service;
 import io.grapebaba.vineyard.common.serializer.SerializerType;

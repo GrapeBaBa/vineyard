@@ -18,7 +18,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * Opaque generator.
  */
-public final class Opaque {
+public abstract class Opaque {
     private static final AtomicInteger ATOMIC_INTEGER = new AtomicInteger();
 
     /**
