@@ -56,14 +56,20 @@ public abstract class Grape {
     @SuppressWarnings({"rawtypes"})
     public static VineyardServer<RequestMessage, ResponseMessage> serve(SocketAddress socketAddress,
                                                                         Observable<Function> functionObservable) {
+        final int defaultIdleTime = 60;
         return VineyardServer
                 .newServer(socketAddress)
                 .addChannelHandlerLast(PacketDecoder.class.getName(), PacketDecoder::new)
                 .addChannelHandlerLast(PacketEncoder.class.getName(), PacketEncoder::new)
                 .addChannelHandlerLast(GrapeCodecAdapter.class.getName(),
                         GrapeCodecAdapter::new)
-                .<RequestMessage, ResponseMessage>addChannelHandlerLast(HeartbeatServerCodec.class.getName(),
+                .addChannelHandlerLast(HeartbeatServerCodec.class.getName(),
                         HeartbeatServerCodec::new)
+                .addChannelHandlerLast(
+                        IdleStateHandler.class.getName(),
+                        () -> new IdleStateHandler(defaultIdleTime, defaultIdleTime, defaultIdleTime))
+                .<RequestMessage, ResponseMessage>addChannelHandlerLast(
+                        HeartbeatServerHandler.class.getName(), HeartbeatServerHandler::new)
                 .start(new GrapeServerService(functionObservable));
     }
 
@@ -89,7 +95,7 @@ public abstract class Grape {
                         IdleStateHandler.class.getName(),
                         () -> new IdleStateHandler(defaultIdleTime, defaultIdleTime, defaultIdleTime))
                 .<RequestMessage, ResponseMessage>addChannelHandlerLast(
-                        HeartbeatHandler.class.getName(), HeartbeatHandler::new)
+                        HeartbeatClientHandler.class.getName(), HeartbeatClientHandler::new)
                 .createService(client ->
                         new StackService<>(just(new StatFilter<>(), new GrapeStatFilter()),
                                 new GrapeClientService(client)));
