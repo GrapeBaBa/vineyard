@@ -19,16 +19,17 @@ import io.grapebaba.vineyard.common.StackService;
 import io.grapebaba.vineyard.common.client.VineyardClient;
 import io.grapebaba.vineyard.common.codec.packet.PacketDecoder;
 import io.grapebaba.vineyard.common.codec.packet.PacketEncoder;
-import io.grapebaba.vineyard.common.protocol.packet.Packet;
 import io.grapebaba.vineyard.common.server.VineyardServer;
 import io.grapebaba.vineyard.common.metrics.StatFilter;
 import io.grapebaba.vineyard.grape.codec.grape.GrapeCodecAdapter;
+import io.grapebaba.vineyard.grape.codec.grape.HeartbeatClientCodec;
+import io.grapebaba.vineyard.grape.codec.grape.HeartbeatServerCodec;
 import io.grapebaba.vineyard.grape.metrics.GrapeStatFilter;
 import io.grapebaba.vineyard.grape.protocol.grape.RequestMessage;
 import io.grapebaba.vineyard.grape.protocol.grape.ResponseMessage;
 import io.grapebaba.vineyard.grape.service.GrapeClientService;
 import io.grapebaba.vineyard.grape.service.GrapeServerService;
-import io.netty.buffer.ByteBuf;
+import io.netty.handler.timeout.IdleStateHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import rx.Observable;
@@ -57,10 +58,12 @@ public abstract class Grape {
                                                                         Observable<Function> functionObservable) {
         return VineyardServer
                 .newServer(socketAddress)
-                .<ByteBuf, Packet>addChannelHandlerLast(PacketDecoder.class.getName(), PacketDecoder::new)
-                .<Packet, ByteBuf>addChannelHandlerLast(PacketEncoder.class.getName(), PacketEncoder::new)
-                .<RequestMessage, ResponseMessage>addChannelHandlerLast(GrapeCodecAdapter.class.getName(),
+                .addChannelHandlerLast(PacketDecoder.class.getName(), PacketDecoder::new)
+                .addChannelHandlerLast(PacketEncoder.class.getName(), PacketEncoder::new)
+                .addChannelHandlerLast(GrapeCodecAdapter.class.getName(),
                         GrapeCodecAdapter::new)
+                .<RequestMessage, ResponseMessage>addChannelHandlerLast(HeartbeatServerCodec.class.getName(),
+                        HeartbeatServerCodec::new)
                 .start(new GrapeServerService(functionObservable));
     }
 
@@ -73,13 +76,20 @@ public abstract class Grape {
     @SuppressWarnings("unchecked")
     public static Service<RequestMessage, ResponseMessage> newClient(
             SocketAddress... socketAddresses) {
+        final int defaultIdleTime = 30;
         return VineyardClient.newClient(socketAddresses)
-                .<ByteBuf, Packet>addChannelHandlerLast(PacketDecoder.class.getName(),
+                .addChannelHandlerLast(PacketDecoder.class.getName(),
                         PacketDecoder::new)
-                .<Packet, ByteBuf>addChannelHandlerLast(PacketEncoder.class.getName(),
+                .addChannelHandlerLast(PacketEncoder.class.getName(),
                         PacketEncoder::new)
-                .<RequestMessage, ResponseMessage>addChannelHandlerLast(GrapeCodecAdapter.class.getName(),
+                .addChannelHandlerLast(GrapeCodecAdapter.class.getName(),
                         GrapeCodecAdapter::new)
+                .addChannelHandlerLast(HeartbeatClientCodec.class.getName(), HeartbeatClientCodec::new)
+                .addChannelHandlerLast(
+                        IdleStateHandler.class.getName(),
+                        () -> new IdleStateHandler(defaultIdleTime, defaultIdleTime, defaultIdleTime))
+                .<RequestMessage, ResponseMessage>addChannelHandlerLast(
+                        HeartbeatHandler.class.getName(), HeartbeatHandler::new)
                 .createService(client ->
                         new StackService<>(just(new StatFilter<>(), new GrapeStatFilter()),
                                 new GrapeClientService(client)));

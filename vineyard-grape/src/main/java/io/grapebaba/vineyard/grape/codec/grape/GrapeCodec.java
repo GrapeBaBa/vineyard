@@ -18,8 +18,10 @@ import io.grapebaba.vineyard.common.serializer.SerializerType;
 import io.grapebaba.vineyard.grape.protocol.MessageType;
 import io.grapebaba.vineyard.common.codec.ProtocolCodec;
 import io.grapebaba.vineyard.grape.protocol.grape.GrapeMessage;
-import io.grapebaba.vineyard.grape.protocol.grape.RequestMessage;
+import io.grapebaba.vineyard.grape.protocol.grape.HeartbeatRequestMessage;
+import io.grapebaba.vineyard.grape.protocol.grape.HeartbeatResponseMessage;
 import io.grapebaba.vineyard.grape.protocol.grape.ResponseMessage;
+import io.grapebaba.vineyard.grape.protocol.grape.RequestMessage;
 import io.netty.buffer.ByteBuf;
 
 import static io.grapebaba.vineyard.common.serializer.Serializers.serializer;
@@ -42,6 +44,10 @@ public class GrapeCodec implements ProtocolCodec<GrapeMessage> {
                 return new RequestMessageCodec().decode(byteBuf);
             case RESPONSE:
                 return new ResponseMessageCodec().decode(byteBuf);
+            case HEARTBEAT_REQUEST:
+                return new HeartbeatRequestMessage();
+            case HEARTBEAT_RESPONSE:
+                return new HeartbeatResponseMessage();
             default:
                 throw new RuntimeException("Cannot decode message by GrapeCodec");
         }
@@ -54,6 +60,10 @@ public class GrapeCodec implements ProtocolCodec<GrapeMessage> {
                 return new RequestMessageCodec().encode((RequestMessage) message);
             case RESPONSE:
                 return new ResponseMessageCodec().encode((ResponseMessage) message);
+            case HEARTBEAT_REQUEST:
+                return getHeartbeatByteBuf(message);
+            case HEARTBEAT_RESPONSE:
+                return getHeartbeatByteBuf(message);
             default:
                 throw new RuntimeException("Cannot decode message by GrapeCodec");
         }
@@ -172,5 +182,11 @@ public class GrapeCodec implements ProtocolCodec<GrapeMessage> {
             return byteBuf;
         }
 
+    }
+
+    private ByteBuf getHeartbeatByteBuf(GrapeMessage message) {
+        ByteBuf resByteBuf = DEFAULT.buffer();
+        resByteBuf.writeByte(message.getMessageType().getValue());
+        return resByteBuf;
     }
 }

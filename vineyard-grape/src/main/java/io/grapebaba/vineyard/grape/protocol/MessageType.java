@@ -27,9 +27,13 @@ public enum MessageType {
      */
     RESPONSE,
     /**
-     * HEARTBEAT.
+     * HEARTBEAT_REQUEST.
      */
-    HEARTBEAT;
+    HEARTBEAT_REQUEST,
+    /**
+     * HEARTBEAT_REQUEST.
+     */
+    HEARTBEAT_RESPONSE;
 
     /**
      * Get byte of message type.
@@ -42,7 +46,7 @@ public enum MessageType {
                 return 0x00;
             case RESPONSE:
                 return 0x01;
-            case HEARTBEAT:
+            case HEARTBEAT_REQUEST:
                 return 0x02;
             default:
                 throw new IllegalArgumentException("Unknown MessageType" + this);
@@ -63,7 +67,7 @@ public enum MessageType {
             case 0x01:
                 return RESPONSE;
             case 0x02:
-                return HEARTBEAT;
+                return HEARTBEAT_REQUEST;
             default:
                 throw new IllegalArgumentException("Unknown MessageType " + value);
         }
