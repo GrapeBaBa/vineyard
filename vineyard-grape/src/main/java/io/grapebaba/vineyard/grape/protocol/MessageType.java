@@ -48,6 +48,8 @@ public enum MessageType {
                 return 0x01;
             case HEARTBEAT_REQUEST:
                 return 0x02;
+            case HEARTBEAT_RESPONSE:
+                return 0x03;
             default:
                 throw new IllegalArgumentException("Unknown MessageType" + this);
         }
@@ -68,6 +70,8 @@ public enum MessageType {
                 return RESPONSE;
             case 0x02:
                 return HEARTBEAT_REQUEST;
+            case 0x03:
+                return HEARTBEAT_RESPONSE;
             default:
                 throw new IllegalArgumentException("Unknown MessageType " + value);
         }

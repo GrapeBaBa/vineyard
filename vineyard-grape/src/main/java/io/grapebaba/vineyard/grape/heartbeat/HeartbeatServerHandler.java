@@ -25,7 +25,10 @@ public class HeartbeatServerHandler extends ChannelDuplexHandler {
     @Override
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
         if (evt instanceof IdleStateEvent) {
-            ctx.disconnect();
+            IdleStateEvent event = (IdleStateEvent) evt;
+            if (event == IdleStateEvent.READER_IDLE_STATE_EVENT) {
+                ctx.disconnect();
+            }
         } else {
             ctx.fireUserEventTriggered(evt);
         }

@@ -26,7 +26,10 @@ public class HeartbeatClientHandler extends ChannelDuplexHandler {
     @Override
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
         if (evt instanceof IdleStateEvent) {
-            ctx.writeAndFlush(new HeartbeatRequestMessage());
+            IdleStateEvent event = (IdleStateEvent) evt;
+            if (event == IdleStateEvent.WRITER_IDLE_STATE_EVENT) {
+                ctx.writeAndFlush(new HeartbeatRequestMessage());
+            }
         } else {
             ctx.fireUserEventTriggered(evt);
         }
