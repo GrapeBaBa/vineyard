@@ -12,7 +12,7 @@
  * the License.
  */
 
-package io.grapebaba.vineyard.grape.codec.grape;
+package io.grapebaba.vineyard.grape.codec;
 
 import io.grapebaba.vineyard.common.serializer.SerializerType;
 import io.grapebaba.vineyard.grape.protocol.MessageType;

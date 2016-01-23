@@ -12,11 +12,12 @@
  * the License.
  */
 
-package io.grapebaba.vineyard.grape.codec.grape;
+package io.grapebaba.vineyard.grape.codec;
 
-import io.grapebaba.vineyard.grape.protocol.MessageType;
+import io.grapebaba.vineyard.grape.heartbeat.HeartbeatClientCodec;
 import io.grapebaba.vineyard.grape.protocol.grape.GrapeMessage;
-import io.grapebaba.vineyard.grape.protocol.grape.HeartbeatResponseMessage;
+import io.grapebaba.vineyard.common.protocol.packet.Packet;
+import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageCodec;
 import org.slf4j.Logger;
@@ -24,11 +25,13 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
+import static io.grapebaba.vineyard.common.protocol.packet.Packet.newBuilder;
+
 /**
- * The server side heartbeat handler.
+ * The netty codec for GrapeMessage codec.
  */
-public class HeartbeatServerCodec
-        extends MessageToMessageCodec<GrapeMessage, GrapeMessage> {
+public class GrapeCodecAdapter
+        extends MessageToMessageCodec<Packet, GrapeMessage> {
     private static final Logger LOGGER = LoggerFactory
             .getLogger(HeartbeatClientCodec.class);
 
@@ -37,17 +40,16 @@ public class HeartbeatServerCodec
     @Override
     protected void encode(ChannelHandlerContext ctx, GrapeMessage msg,
                           List<Object> out) throws Exception {
-        out.add(msg);
+        final ByteBuf payload = CODEC.encode(msg);
+        final int payloadLength = payload.readableBytes();
+        out.add(newBuilder().withBodyLength(payloadLength).withBodyByteBuf(payload)
+                .build());
     }
 
     @Override
-    protected void decode(ChannelHandlerContext ctx, GrapeMessage msg, List<Object> out)
+    protected void decode(ChannelHandlerContext ctx, Packet msg, List<Object> out)
             throws Exception {
-        if (msg.getMessageType() == MessageType.HEARTBEAT_REQUEST) {
-            ctx.writeAndFlush(new HeartbeatResponseMessage());
-        } else {
-            out.add(msg);
-        }
+        out.add(CODEC.decode(msg.getBodyByteBuf()));
     }
 
 }

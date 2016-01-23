@@ -12,7 +12,7 @@
  * the License.
  */
 
-package io.grapebaba.vineyard.grape;
+package io.grapebaba.vineyard.grape.heartbeat;
 
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;

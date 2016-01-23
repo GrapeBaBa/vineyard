@@ -12,11 +12,12 @@
  * the License.
  */
 
-package io.grapebaba.vineyard.grape.codec.grape;
+package io.grapebaba.vineyard.grape.heartbeat;
 
+import io.grapebaba.vineyard.grape.codec.GrapeCodec;
+import io.grapebaba.vineyard.grape.protocol.MessageType;
 import io.grapebaba.vineyard.grape.protocol.grape.GrapeMessage;
-import io.grapebaba.vineyard.common.protocol.packet.Packet;
-import io.netty.buffer.ByteBuf;
+import io.grapebaba.vineyard.grape.protocol.grape.HeartbeatResponseMessage;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageCodec;
 import org.slf4j.Logger;
@@ -24,13 +25,11 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
-import static io.grapebaba.vineyard.common.protocol.packet.Packet.newBuilder;
-
 /**
- * The netty codec for GrapeMessage codec.
+ * The server side heartbeat handler.
  */
-public class GrapeCodecAdapter
-        extends MessageToMessageCodec<Packet, GrapeMessage> {
+public class HeartbeatServerCodec
+        extends MessageToMessageCodec<GrapeMessage, GrapeMessage> {
     private static final Logger LOGGER = LoggerFactory
             .getLogger(HeartbeatClientCodec.class);
 
@@ -39,16 +38,17 @@ public class GrapeCodecAdapter
     @Override
     protected void encode(ChannelHandlerContext ctx, GrapeMessage msg,
                           List<Object> out) throws Exception {
-        final ByteBuf payload = CODEC.encode(msg);
-        final int payloadLength = payload.readableBytes();
-        out.add(newBuilder().withBodyLength(payloadLength).withBodyByteBuf(payload)
-                .build());
+        out.add(msg);
     }
 
     @Override
-    protected void decode(ChannelHandlerContext ctx, Packet msg, List<Object> out)
+    protected void decode(ChannelHandlerContext ctx, GrapeMessage msg, List<Object> out)
             throws Exception {
-        out.add(CODEC.decode(msg.getBodyByteBuf()));
+        if (msg.getMessageType() == MessageType.HEARTBEAT_REQUEST) {
+            ctx.writeAndFlush(new HeartbeatResponseMessage());
+        } else {
+            out.add(msg);
+        }
     }
 
 }

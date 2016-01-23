@@ -12,8 +12,9 @@
  * the License.
  */
 
-package io.grapebaba.vineyard.grape.codec.grape;
+package io.grapebaba.vineyard.grape.heartbeat;
 
+import io.grapebaba.vineyard.grape.codec.GrapeCodec;
 import io.grapebaba.vineyard.grape.protocol.MessageType;
 import io.grapebaba.vineyard.grape.protocol.grape.GrapeMessage;
 import io.netty.channel.ChannelHandlerContext;
