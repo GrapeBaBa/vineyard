@@ -32,6 +32,7 @@ import rx.functions.Function;
 
 import java.net.InetSocketAddress;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static io.grapebaba.vineyard.common.Opaque.next;
@@ -75,8 +76,7 @@ public class GrapeTest {
             latch.countDown();
         });
 
-        latch.await();
-        //assertTrue(latch.await(waitingTime, TimeUnit.SECONDS));
+        assertTrue(latch.await(waitingTime, TimeUnit.SECONDS));
         assertEquals("grape", result.get());
     }
 
@@ -110,7 +110,7 @@ public class GrapeTest {
             latch.countDown();
         });
 
-        latch.await();
+        assertTrue(latch.await(waitingTime, TimeUnit.SECONDS));
         assertTrue(result.get() instanceof ErrorResponse);
     }
 
@@ -145,8 +145,7 @@ public class GrapeTest {
             latch.countDown();
         });
 
-        latch.await();
-        //assertTrue(latch.await(waitingTime, TimeUnit.SECONDS));
+        assertTrue(latch.await(waitingTime, TimeUnit.SECONDS));
         assertNull(((ResponseMessage) result.get()).getResult());
         assertEquals(new Integer(opaque), ((ResponseMessage) result.get()).getOpaque());
     }
