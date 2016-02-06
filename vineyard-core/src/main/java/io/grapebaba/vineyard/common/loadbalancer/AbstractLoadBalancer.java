@@ -98,7 +98,18 @@ public abstract class AbstractLoadBalancer<W, R> implements LoadBalancingStrateg
         return new HostHolder<>(connector, newListener());
     }
 
+    /**
+     * Create listener.
+     *
+     * @return listener
+     */
     protected abstract ClientEventListener newListener();
 
+    /**
+     * Get weight.
+     *
+     * @param eventListener input
+     * @return weight
+     */
     protected abstract long getWeight(ClientEventListener eventListener);
 }
