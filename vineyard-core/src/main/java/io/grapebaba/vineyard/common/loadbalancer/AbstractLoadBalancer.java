@@ -37,7 +37,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @param <W>
  * @param <R>
  */
-public abstract class AbstractLoadBalancer1<W, R> implements LoadBalancingStrategy<W, R> {
+public abstract class AbstractLoadBalancer<W, R> implements LoadBalancingStrategy<W, R> {
 
     private final Func1<Integer, Integer> nextIndexFinder;
 
@@ -46,14 +46,14 @@ public abstract class AbstractLoadBalancer1<W, R> implements LoadBalancingStrate
      *
      * @param nextIndexFinder input
      */
-    protected AbstractLoadBalancer1(Func1<Integer, Integer> nextIndexFinder) {
+    protected AbstractLoadBalancer(Func1<Integer, Integer> nextIndexFinder) {
         this.nextIndexFinder = nextIndexFinder;
     }
 
     /**
      * Constructor.
      */
-    protected AbstractLoadBalancer1() {
+    protected AbstractLoadBalancer() {
         this(new Func1<Integer, Integer>() {
             private final AtomicInteger nextIndex = new AtomicInteger();
 
