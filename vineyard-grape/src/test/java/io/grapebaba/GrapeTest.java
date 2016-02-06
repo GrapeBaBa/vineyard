@@ -23,7 +23,9 @@ import io.grapebaba.vineyard.grape.protocol.MessageType;
 import io.grapebaba.vineyard.grape.protocol.grape.RequestMessage;
 import io.grapebaba.vineyard.grape.protocol.grape.ResponseMessage;
 import io.reactivex.netty.protocol.tcp.server.TcpServer;
+import org.junit.FixMethodOrder;
 import org.junit.Test;
+import org.junit.runners.MethodSorters;
 import rx.Observable;
 import rx.functions.Func1;
 import rx.functions.Function;
@@ -41,17 +43,19 @@ import static org.junit.Assert.assertTrue;
 /**
  * A unit test for vineyard protocol.
  */
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class GrapeTest {
+
     /**
      * A test for send and receive.
      */
     @SuppressWarnings("rawtypes")
     @Test
-    public void normal() throws Exception {
+    public void testNormal() throws Exception {
         final int port = 8076;
         final int timeout = 200;
         final int opaque = next();
-        final long waitingTime = 60L;
+        final long waitingTime = 70L;
         final AtomicReference<Object> result = new AtomicReference<>();
         final CountDownLatch latch = new CountDownLatch(1);
         TcpServer server = Grape.serve(new InetSocketAddress(port),
@@ -85,7 +89,7 @@ public class GrapeTest {
         final int port = 8077;
         final int timeout = 200;
         final int opaque = next();
-        final long waitingTime = 30L;
+        final long waitingTime = 60L;
         final AtomicReference<Object> result = new AtomicReference<>();
         final CountDownLatch latch = new CountDownLatch(1);
         TcpServer server = Grape.serve(new InetSocketAddress(port),
@@ -119,7 +123,7 @@ public class GrapeTest {
         final int port = 8078;
         final int timeout = 200;
         final int opaque = next();
-        final long waitingTime = 10L;
+        final long waitingTime = 90L;
         final AtomicReference<Object> result = new AtomicReference<>();
         final CountDownLatch latch = new CountDownLatch(1);
         TcpServer server = Grape.serve(new InetSocketAddress(port),
