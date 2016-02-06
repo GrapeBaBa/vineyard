@@ -57,6 +57,7 @@ public abstract class Grape {
     public static TcpServer<RequestMessage, ResponseMessage> serve(SocketAddress socketAddress,
                                                                    Observable<Function> functionObservable) {
         final int defaultIdleTime = 60;
+        final GrapeServerService service = new GrapeServerService(functionObservable);
         return TcpServer
                 .newServer(socketAddress)
                 .addChannelHandlerLast(PacketDecoder.class.getName(), PacketDecoder::new)
@@ -71,7 +72,6 @@ public abstract class Grape {
                 .<RequestMessage, ResponseMessage>addChannelHandlerLast(
                         HeartbeatServerHandler.class.getName(), HeartbeatServerHandler::new)
                 .start(newConnection -> {
-                    GrapeServerService service = new GrapeServerService(functionObservable);
                     Observable<ResponseMessage> result = newConnection.getInput().flatMap(service::call);
                     return newConnection.writeAndFlushOnEach(result);
                 });
