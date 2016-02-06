@@ -51,7 +51,7 @@ public class GrapeTest {
         final int port = 8076;
         final int timeout = 200;
         final int opaque = next();
-        final long waitingTime = 30L;
+        final long waitingTime = 60L;
         final AtomicReference<Object> result = new AtomicReference<>();
         final CountDownLatch latch = new CountDownLatch(1);
         TcpServer server = Grape.serve(new InetSocketAddress(port),
@@ -119,7 +119,7 @@ public class GrapeTest {
         final int port = 8078;
         final int timeout = 200;
         final int opaque = next();
-        final long waitingTime = 30L;
+        final long waitingTime = 10L;
         final AtomicReference<Object> result = new AtomicReference<>();
         final CountDownLatch latch = new CountDownLatch(1);
         TcpServer server = Grape.serve(new InetSocketAddress(port),
