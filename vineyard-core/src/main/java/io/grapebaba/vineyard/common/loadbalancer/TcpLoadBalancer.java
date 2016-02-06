@@ -32,7 +32,7 @@ import java.util.concurrent.TimeUnit;
  * @param <W> Type of Objects written on the connections created by this load balancer.
  * @param <R> Type of Objects read from the connections created by this load balancer.
  */
-public class TcpLoadBalancer<W, R> extends AbstractLoadBalancer<W, R> {
+public class TcpLoadBalancer<W, R> extends AbstractLoadBalancer1<W, R> {
     /**
      * Constructor.
      */
