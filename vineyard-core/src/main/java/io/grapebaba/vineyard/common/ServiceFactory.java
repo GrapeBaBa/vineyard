@@ -14,7 +14,7 @@
 
 package io.grapebaba.vineyard.common;
 
-import io.grapebaba.vineyard.common.client.VineyardClient;
+import io.reactivex.netty.protocol.tcp.client.TcpClient;
 
 /**
  * Service Factory interface.
@@ -29,5 +29,5 @@ public interface ServiceFactory<Req, Res> {
      * @param client input
      * @return service
      */
-    Service<Req, Res> create(VineyardClient<Req, Res> client);
+    Service<Req, Res> create(TcpClient<Req, Res> client);
 }

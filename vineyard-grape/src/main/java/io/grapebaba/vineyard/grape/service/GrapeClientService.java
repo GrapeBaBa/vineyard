@@ -15,9 +15,9 @@
 package io.grapebaba.vineyard.grape.service;
 
 import io.grapebaba.vineyard.common.Service;
-import io.grapebaba.vineyard.common.client.VineyardClient;
 import io.grapebaba.vineyard.grape.protocol.grape.RequestMessage;
 import io.grapebaba.vineyard.grape.protocol.grape.ResponseMessage;
+import io.reactivex.netty.protocol.tcp.client.TcpClient;
 import rx.Observable;
 import rx.subjects.ReplaySubject;
 
@@ -30,14 +30,14 @@ import java.util.concurrent.ConcurrentMap;
 public class GrapeClientService implements Service<RequestMessage, ResponseMessage> {
     private final ConcurrentMap<Integer, ReplaySubject<ResponseMessage>> req2Res = new ConcurrentHashMap<>();
 
-    private final VineyardClient<RequestMessage, ResponseMessage> client;
+    private final TcpClient<RequestMessage, ResponseMessage> client;
 
     /**
      * Constructor.
      *
      * @param client input
      */
-    public GrapeClientService(VineyardClient<RequestMessage, ResponseMessage> client) {
+    public GrapeClientService(TcpClient<RequestMessage, ResponseMessage> client) {
         this.client = client;
     }
 
@@ -54,7 +54,7 @@ public class GrapeClientService implements Service<RequestMessage, ResponseMessa
                 .subscribe(
                         responseMessage -> {
                             ReplaySubject<ResponseMessage> responseMessageReplaySubject = req2Res
-                                    .remove(message.getOpaque());
+                                    .remove(responseMessage.getOpaque());
                             responseMessageReplaySubject.onNext(responseMessage);
                             responseMessageReplaySubject.onCompleted();
                         });

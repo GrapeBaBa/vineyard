@@ -15,31 +15,29 @@
 package io.grapebaba.vineyard.grape;
 
 import io.grapebaba.vineyard.common.Service;
-import io.grapebaba.vineyard.common.StackService;
-import io.grapebaba.vineyard.common.client.VineyardClient;
 import io.grapebaba.vineyard.common.codec.packet.PacketDecoder;
 import io.grapebaba.vineyard.common.codec.packet.PacketEncoder;
-import io.grapebaba.vineyard.common.server.VineyardServer;
-import io.grapebaba.vineyard.common.metrics.StatFilter;
+import io.grapebaba.vineyard.common.loadbalancer.TcpLoadBalancer;
 import io.grapebaba.vineyard.grape.codec.GrapeCodecAdapter;
 import io.grapebaba.vineyard.grape.heartbeat.HeartbeatClientCodec;
 import io.grapebaba.vineyard.grape.heartbeat.HeartbeatClientHandler;
 import io.grapebaba.vineyard.grape.heartbeat.HeartbeatServerCodec;
 import io.grapebaba.vineyard.grape.heartbeat.HeartbeatServerHandler;
-import io.grapebaba.vineyard.grape.metrics.GrapeStatFilter;
 import io.grapebaba.vineyard.grape.protocol.grape.RequestMessage;
 import io.grapebaba.vineyard.grape.protocol.grape.ResponseMessage;
 import io.grapebaba.vineyard.grape.service.GrapeClientService;
 import io.grapebaba.vineyard.grape.service.GrapeServerService;
 import io.netty.handler.timeout.IdleStateHandler;
+import io.reactivex.netty.client.Host;
+import io.reactivex.netty.client.loadbalancer.LoadBalancerFactory;
+import io.reactivex.netty.protocol.tcp.client.TcpClient;
+import io.reactivex.netty.protocol.tcp.server.TcpServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import rx.Observable;
 import rx.functions.Function;
 
 import java.net.SocketAddress;
-
-import static rx.Observable.just;
 
 
 /**
@@ -56,10 +54,10 @@ public abstract class Grape {
      * @return tcpServer
      */
     @SuppressWarnings({"rawtypes"})
-    public static VineyardServer<RequestMessage, ResponseMessage> serve(SocketAddress socketAddress,
-                                                                        Observable<Function> functionObservable) {
+    public static TcpServer<RequestMessage, ResponseMessage> serve(SocketAddress socketAddress,
+                                                                   Observable<Function> functionObservable) {
         final int defaultIdleTime = 60;
-        return VineyardServer
+        return TcpServer
                 .newServer(socketAddress)
                 .addChannelHandlerLast(PacketDecoder.class.getName(), PacketDecoder::new)
                 .addChannelHandlerLast(PacketEncoder.class.getName(), PacketEncoder::new)
@@ -72,7 +70,11 @@ public abstract class Grape {
                         () -> new IdleStateHandler(defaultIdleTime, defaultIdleTime, defaultIdleTime))
                 .<RequestMessage, ResponseMessage>addChannelHandlerLast(
                         HeartbeatServerHandler.class.getName(), HeartbeatServerHandler::new)
-                .start(new GrapeServerService(functionObservable));
+                .start(newConnection -> {
+                    GrapeServerService service = new GrapeServerService(functionObservable);
+                    Observable<ResponseMessage> result = newConnection.getInput().flatMap(service::call);
+                    return newConnection.writeAndFlushOnEach(result);
+                });
     }
 
     /**
@@ -85,7 +87,9 @@ public abstract class Grape {
     public static Service<RequestMessage, ResponseMessage> newClient(
             SocketAddress... socketAddresses) {
         final int defaultIdleTime = 30;
-        return VineyardClient.newClient(socketAddresses)
+
+        final Observable<Host> hosts = Observable.from(socketAddresses).map(Host::new);
+        TcpClient<RequestMessage, ResponseMessage> client = TcpClient.newClient(LoadBalancerFactory.create(new TcpLoadBalancer<>()), hosts)
                 .addChannelHandlerLast(PacketDecoder.class.getName(),
                         PacketDecoder::new)
                 .addChannelHandlerLast(PacketEncoder.class.getName(),
@@ -97,9 +101,8 @@ public abstract class Grape {
                         IdleStateHandler.class.getName(),
                         () -> new IdleStateHandler(defaultIdleTime, defaultIdleTime, defaultIdleTime))
                 .<RequestMessage, ResponseMessage>addChannelHandlerLast(
-                        HeartbeatClientHandler.class.getName(), HeartbeatClientHandler::new)
-                .createService(client ->
-                        new StackService<>(just(new StatFilter<>(), new GrapeStatFilter()),
-                                new GrapeClientService(client)));
+                        HeartbeatClientHandler.class.getName(), HeartbeatClientHandler::new);
+
+        return new GrapeClientService(client);
     }
 }

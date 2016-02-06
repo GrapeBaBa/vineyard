@@ -15,14 +15,14 @@
 package io.grapebaba;
 
 import com.esotericsoftware.kryo.KryoException;
-import io.grapebaba.vineyard.grape.ErrorResponse;
 import io.grapebaba.vineyard.common.Service;
 import io.grapebaba.vineyard.common.serializer.SerializerType;
-import io.grapebaba.vineyard.common.server.VineyardServer;
+import io.grapebaba.vineyard.grape.ErrorResponse;
 import io.grapebaba.vineyard.grape.Grape;
 import io.grapebaba.vineyard.grape.protocol.MessageType;
 import io.grapebaba.vineyard.grape.protocol.grape.RequestMessage;
 import io.grapebaba.vineyard.grape.protocol.grape.ResponseMessage;
+import io.reactivex.netty.protocol.tcp.server.TcpServer;
 import org.junit.Test;
 import rx.Observable;
 import rx.functions.Func1;
@@ -34,9 +34,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static io.grapebaba.vineyard.common.Opaque.next;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * A unit test for vineyard protocol.
@@ -54,7 +52,7 @@ public class GrapeTest {
         final long waitingTime = 2000L;
         final AtomicReference<Object> result = new AtomicReference<>();
         final CountDownLatch latch = new CountDownLatch(1);
-        VineyardServer server = Grape.serve(new InetSocketAddress(port),
+        TcpServer server = Grape.serve(new InetSocketAddress(port),
                 Observable.just(new TestFunc()));
 
         Service<RequestMessage, ResponseMessage> client =
@@ -88,7 +86,7 @@ public class GrapeTest {
         final long waitingTime = 10L;
         final AtomicReference<Object> result = new AtomicReference<>();
         final CountDownLatch latch = new CountDownLatch(1);
-        VineyardServer server = Grape.serve(new InetSocketAddress(port),
+        TcpServer server = Grape.serve(new InetSocketAddress(port),
                 Observable.just(new TestThrowable()));
 
         Service<RequestMessage, ResponseMessage> client =
@@ -122,7 +120,7 @@ public class GrapeTest {
         final long waitingTime = 10L;
         final AtomicReference<Object> result = new AtomicReference<>();
         final CountDownLatch latch = new CountDownLatch(1);
-        VineyardServer server = Grape.serve(new InetSocketAddress(port),
+        TcpServer server = Grape.serve(new InetSocketAddress(port),
                 Observable.just(new TestVoidFunction()));
 
         Service<RequestMessage, ResponseMessage> client =
