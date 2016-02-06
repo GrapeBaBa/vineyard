@@ -33,7 +33,9 @@ import java.util.concurrent.TimeUnit;
  * @param <R> Type of Objects read from the connections created by this load balancer.
  */
 public class TcpLoadBalancer<W, R> extends AbstractLoadBalancer<W, R> {
-
+    /**
+     * Constructor.
+     */
     public TcpLoadBalancer() {
         super();
     }

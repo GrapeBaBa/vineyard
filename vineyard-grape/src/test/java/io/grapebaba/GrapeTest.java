@@ -15,9 +15,9 @@
 package io.grapebaba;
 
 import com.esotericsoftware.kryo.KryoException;
+import io.grapebaba.vineyard.grape.ErrorResponse;
 import io.grapebaba.vineyard.common.Service;
 import io.grapebaba.vineyard.common.serializer.SerializerType;
-import io.grapebaba.vineyard.grape.ErrorResponse;
 import io.grapebaba.vineyard.grape.Grape;
 import io.grapebaba.vineyard.grape.protocol.MessageType;
 import io.grapebaba.vineyard.grape.protocol.grape.RequestMessage;
@@ -34,7 +34,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static io.grapebaba.vineyard.common.Opaque.next;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * A unit test for vineyard protocol.
