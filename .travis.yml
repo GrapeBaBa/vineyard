@@ -3,4 +3,4 @@ jdk:
   - oraclejdk8
 install:
   - ./gradlew assemble
-  - ./gradlew check --debug
+  - ./gradlew check --stacktrace
