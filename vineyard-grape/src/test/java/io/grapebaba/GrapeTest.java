@@ -52,7 +52,7 @@ public class GrapeTest {
         final int port = 9076;
         final int timeout = 200;
         final int opaque = next();
-        final long waitingTime = 200L;
+        final long waitingTime = 10L;
         final AtomicReference<Object> result = new AtomicReference<>();
         final CountDownLatch latch = new CountDownLatch(1);
         TcpServer server = Grape.serve(new InetSocketAddress(port),
