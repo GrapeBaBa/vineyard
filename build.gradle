@@ -91,7 +91,7 @@ subprojects {
     }
 
     it.test {
-        maxHeapSize="128m"
+        maxHeapSize="1024m"
         testLogging {
             showStandardStreams = true
         }
