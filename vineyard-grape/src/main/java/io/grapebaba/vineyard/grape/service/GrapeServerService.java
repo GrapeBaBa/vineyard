@@ -25,10 +25,7 @@ import org.slf4j.LoggerFactory;
 import rx.Observable;
 import rx.functions.Function;
 
-import java.lang.reflect.InvocationTargetException;
-
 import static com.google.common.base.Throwables.getRootCause;
-import static com.google.common.base.Throwables.propagate;
 import static rx.Observable.just;
 
 /**
@@ -57,7 +54,7 @@ public class GrapeServerService implements Service<RequestMessage, ResponseMessa
                         .getName().equals(beanName))
                 .flatMap(
                         function -> {
-                            Object result = null;
+                            Object result;
                             try {
                                 result = MethodUtils
                                         .invokeMethod(
@@ -66,8 +63,16 @@ public class GrapeServerService implements Service<RequestMessage, ResponseMessa
                                                         .getMethodName(),
                                                 requestMessage
                                                         .getArguments());
-                            } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-                                propagate(e);
+                            } catch (Throwable e) {
+                                LOGGER.error(
+                                        "Invoke service method exception",
+                                        e);
+                                Throwable root = getRootCause(e);
+                                result = new ErrorResponse(
+                                        null == root
+                                                ? "Cannot find root cause exception"
+                                                : root.getClass().getName()
+                                                + ":" + root.getMessage());
                             }
 
                             ResponseMessage responseMessage = ResponseMessage
@@ -78,29 +83,8 @@ public class GrapeServerService implements Service<RequestMessage, ResponseMessa
                                     .withOpaque(requestMessage.getOpaque())
                                     .withResult(result)
                                     .build();
+
                             return just(responseMessage);
-
-                        }).onErrorReturn(throwable -> {
-                            LOGGER.error(
-                                    "Invoke service method exception",
-                                    throwable);
-                            Throwable root = getRootCause(throwable);
-                            Object result = new ErrorResponse(
-                                    null == root
-                                            ? "Cannot find root cause exception"
-                                            : root.getClass().getName()
-                                            + ":" + root.getMessage());
-
-                            ResponseMessage responseMessage = ResponseMessage
-                                    .newBuilder()
-                                    .withMessageType(MessageType.RESPONSE)
-                                    .withSerializerType(requestMessage
-                                            .getSerializerType())
-                                    .withOpaque(requestMessage.getOpaque())
-                                    .withResult(result)
-                                    .build();
-
-                            return responseMessage;
                         });
     }
 }
