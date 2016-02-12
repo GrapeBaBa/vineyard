@@ -60,7 +60,7 @@ subprojects {
         mockitoVersion = '1.10.19'
         slf4jVersion = '1.7.12'
         logbackVersion = '1.1.3'
-        rxnettyVersion = '0.5.0-SNAPSHOT'
+        rxnettyVersion = '0.5.2-SNAPSHOT'
         kryoVersion = '3.0.2'
         kryoSerializerVersion = '0.33'
         fstVersion = '2.33'
@@ -74,7 +74,7 @@ subprojects {
                 "org.slf4j:slf4j-api:$slf4jVersion",
                 "org.slf4j:jcl-over-slf4j:$slf4jVersion",
                 "ch.qos.logback:logback-classic:$logbackVersion",
-                "io.reactivex:rxnetty:$rxnettyVersion",
+                "io.reactivex:rxnetty-tcp:$rxnettyVersion",
                 "com.esotericsoftware:kryo:$kryoVersion",
                 "de.javakaffee:kryo-serializers:$kryoSerializerVersion",
                 "de.ruedigermoeller:fst:$fstVersion",

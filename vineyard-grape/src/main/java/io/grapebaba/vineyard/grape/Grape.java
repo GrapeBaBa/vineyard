@@ -29,11 +29,11 @@ import io.grapebaba.vineyard.grape.protocol.grape.RequestMessage;
 import io.grapebaba.vineyard.grape.protocol.grape.ResponseMessage;
 import io.grapebaba.vineyard.grape.service.GrapeClientService;
 import io.grapebaba.vineyard.grape.service.GrapeServerService;
-import io.netty.buffer.ByteBuf;
 import io.netty.handler.timeout.IdleStateHandler;
+import io.reactivex.netty.client.HostConnector;
+import io.reactivex.netty.client.pool.PooledConnectionProvider;
 import io.reactivex.netty.protocol.tcp.client.TcpClient;
 import io.reactivex.netty.protocol.tcp.server.TcpServer;
-import netflix.ocelli.rxnetty.protocol.tcp.TcpLoadBalancer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import rx.Observable;
@@ -41,10 +41,7 @@ import rx.functions.Function;
 
 import java.net.SocketAddress;
 
-import static netflix.ocelli.Instance.create;
-import static rx.Observable.from;
 import static rx.Observable.just;
-import static rx.Observable.never;
 
 /**
  * Grape protocol representation.
@@ -87,19 +84,17 @@ public abstract class Grape {
     /**
      * Return a client object.
      *
-     * @param socketAddresses input
+     * @param socketAddress input
      * @return a client
      */
     @SuppressWarnings("unchecked")
     public static Service<RequestMessage, ResponseMessage> newClient(
-            SocketAddress... socketAddresses) {
+            SocketAddress socketAddress) {
         final int defaultIdleTime = 30;
+        //final int defaultMaxConnectionNumer = 4;
 
         TcpClient<RequestMessage, ResponseMessage> client = TcpClient.newClient(
-                TcpLoadBalancer.<ByteBuf, ByteBuf>roundRobin(
-                        from(socketAddresses).flatMap(
-                                socketAddress -> just(create(socketAddress,
-                                        never())))).toConnectionProvider())
+                socketAddress)
                 .addChannelHandlerLast(PacketDecoder.class.getName(),
                         PacketDecoder::new)
                 .addChannelHandlerLast(PacketEncoder.class.getName(),

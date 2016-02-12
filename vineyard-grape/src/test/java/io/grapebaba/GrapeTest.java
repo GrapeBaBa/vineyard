@@ -76,7 +76,7 @@ public class GrapeTest {
         assertTrue(latch.await(waitingTime, TimeUnit.SECONDS));
         assertEquals("grape", result.get());
 
-       // server.shutdown();
+        server.shutdown();
     }
 
     /**
@@ -112,7 +112,7 @@ public class GrapeTest {
         assertTrue(latch.await(waitingTime, TimeUnit.SECONDS));
         assertTrue(result.get() instanceof ErrorResponse);
 
-       // server.shutdown();
+        server.shutdown();
     }
 
     /**
@@ -150,7 +150,7 @@ public class GrapeTest {
         assertNull(((ResponseMessage) result.get()).getResult());
         assertEquals(new Integer(opaque), ((ResponseMessage) result.get()).getOpaque());
 
-       // server.shutdown();
+        server.shutdown();
     }
 
     /**
