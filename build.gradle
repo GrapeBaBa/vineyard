@@ -90,12 +90,12 @@ subprojects {
 
     }
 
-    it.test {
-        maxHeapSize="1024m"
-        testLogging {
-            showStandardStreams = true
-        }
-    }
+//    it.test {
+//        maxHeapSize="1024m"
+//        testLogging {
+//            showStandardStreams = true
+//        }
+//    }
 
     checkstyle {
         configFile = file("$rootProject.projectDir/code_quality/checkstyle/google_checks.xml")
