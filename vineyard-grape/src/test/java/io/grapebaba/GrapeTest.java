@@ -83,7 +83,7 @@ public class GrapeTest {
      * A test for test exception.
      */
     @SuppressWarnings("rawtypes")
-    @Test
+    //@Test
     public void testException() throws Exception {
         final int port = 9077;
         final int timeout = 200;
@@ -119,7 +119,7 @@ public class GrapeTest {
      * A test for test void function.
      */
     @SuppressWarnings("rawtypes")
-    @Test
+    //@Test
     public void testVoidFunction() throws Exception {
         final int port = 9078;
         final int timeout = 200;
