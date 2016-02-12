@@ -30,8 +30,6 @@ import io.grapebaba.vineyard.grape.protocol.grape.ResponseMessage;
 import io.grapebaba.vineyard.grape.service.GrapeClientService;
 import io.grapebaba.vineyard.grape.service.GrapeServerService;
 import io.netty.handler.timeout.IdleStateHandler;
-import io.reactivex.netty.client.HostConnector;
-import io.reactivex.netty.client.pool.PooledConnectionProvider;
 import io.reactivex.netty.protocol.tcp.client.TcpClient;
 import io.reactivex.netty.protocol.tcp.server.TcpServer;
 import org.slf4j.Logger;
