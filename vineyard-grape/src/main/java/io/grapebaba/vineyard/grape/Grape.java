@@ -20,16 +20,16 @@ import io.grapebaba.vineyard.common.codec.packet.PacketEncoder;
 import io.grapebaba.vineyard.common.StackService;
 import io.grapebaba.vineyard.common.metrics.StatFilter;
 import io.grapebaba.vineyard.grape.codec.GrapeCodecAdapter;
-import io.grapebaba.vineyard.grape.heartbeat.HeartbeatClientCodec;
-import io.grapebaba.vineyard.grape.heartbeat.HeartbeatClientHandler;
-import io.grapebaba.vineyard.grape.heartbeat.HeartbeatServerCodec;
-import io.grapebaba.vineyard.grape.heartbeat.HeartbeatServerHandler;
+//import io.grapebaba.vineyard.grape.heartbeat.HeartbeatClientCodec;
+//import io.grapebaba.vineyard.grape.heartbeat.HeartbeatClientHandler;
+//import io.grapebaba.vineyard.grape.heartbeat.HeartbeatServerCodec;
+//import io.grapebaba.vineyard.grape.heartbeat.HeartbeatServerHandler;
 import io.grapebaba.vineyard.grape.metrics.GrapeStatFilter;
 import io.grapebaba.vineyard.grape.protocol.grape.RequestMessage;
 import io.grapebaba.vineyard.grape.protocol.grape.ResponseMessage;
 import io.grapebaba.vineyard.grape.service.GrapeClientService;
 import io.grapebaba.vineyard.grape.service.GrapeServerService;
-import io.netty.handler.timeout.IdleStateHandler;
+//import io.netty.handler.timeout.IdleStateHandler;
 import io.reactivex.netty.protocol.tcp.client.TcpClient;
 import io.reactivex.netty.protocol.tcp.server.TcpServer;
 import org.slf4j.Logger;
@@ -64,15 +64,15 @@ public abstract class Grape {
                 .newServer(socketAddress)
                 .addChannelHandlerLast(PacketDecoder.class.getName(), PacketDecoder::new)
                 .addChannelHandlerLast(PacketEncoder.class.getName(), PacketEncoder::new)
-                .addChannelHandlerLast(GrapeCodecAdapter.class.getName(),
+                .<RequestMessage, ResponseMessage>addChannelHandlerLast(GrapeCodecAdapter.class.getName(),
                         GrapeCodecAdapter::new)
-                .addChannelHandlerLast(HeartbeatServerCodec.class.getName(),
-                        HeartbeatServerCodec::new)
-                .addChannelHandlerLast(
-                        IdleStateHandler.class.getName(),
-                        () -> new IdleStateHandler(defaultIdleTime, defaultIdleTime, defaultIdleTime))
-                .<RequestMessage, ResponseMessage>addChannelHandlerLast(
-                        HeartbeatServerHandler.class.getName(), HeartbeatServerHandler::new)
+//                .addChannelHandlerLast(HeartbeatServerCodec.class.getName(),
+//                        HeartbeatServerCodec::new)
+//                .addChannelHandlerLast(
+//                        IdleStateHandler.class.getName(),
+//                        () -> new IdleStateHandler(defaultIdleTime, defaultIdleTime, defaultIdleTime))
+//                .<RequestMessage, ResponseMessage>addChannelHandlerLast(
+//                        HeartbeatServerHandler.class.getName(), HeartbeatServerHandler::new)
                 .start(newConnection -> {
                     Observable<ResponseMessage> result = newConnection.getInput().flatMap(service::call);
                     return newConnection.writeAndFlushOnEach(result);
@@ -97,16 +97,16 @@ public abstract class Grape {
                         PacketDecoder::new)
                 .addChannelHandlerLast(PacketEncoder.class.getName(),
                         PacketEncoder::new)
-                .addChannelHandlerLast(GrapeCodecAdapter.class.getName(),
-                        GrapeCodecAdapter::new)
-                .addChannelHandlerLast(
-                        HeartbeatClientCodec.class.getName(), HeartbeatClientCodec::new)
-                .addChannelHandlerLast(
-                        IdleStateHandler.class.getName(),
-                        () -> new IdleStateHandler(
-                                defaultIdleTime, defaultIdleTime, defaultIdleTime))
-                .<RequestMessage, ResponseMessage>addChannelHandlerLast(
-                        HeartbeatClientHandler.class.getName(), HeartbeatClientHandler::new);
+                .<RequestMessage, ResponseMessage>addChannelHandlerLast(GrapeCodecAdapter.class.getName(),
+                        GrapeCodecAdapter::new);
+//                .addChannelHandlerLast(
+//                        HeartbeatClientCodec.class.getName(), HeartbeatClientCodec::new)
+//                .addChannelHandlerLast(
+//                        IdleStateHandler.class.getName(),
+//                        () -> new IdleStateHandler(
+//                                defaultIdleTime, defaultIdleTime, defaultIdleTime))
+//                .<RequestMessage, ResponseMessage>addChannelHandlerLast(
+//                        HeartbeatClientHandler.class.getName(), HeartbeatClientHandler::new);
 
         return new StackService<>(just(new StatFilter<>(), new GrapeStatFilter()),
                 new GrapeClientService(client));
