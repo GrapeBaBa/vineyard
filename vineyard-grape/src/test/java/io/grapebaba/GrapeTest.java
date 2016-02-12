@@ -49,10 +49,10 @@ public class GrapeTest {
     @SuppressWarnings("rawtypes")
     @Test
     public void testNormal() throws Exception {
-        final int port = 9076;
+        final int port = 8076;
         final int timeout = 200;
         final int opaque = next();
-        final long waitingTime = 20L;
+        final long waitingTime = 10L;
         final AtomicReference<Object> result = new AtomicReference<>();
         final CountDownLatch latch = new CountDownLatch(1);
         TcpServer server = Grape.serve(new InetSocketAddress(port),
