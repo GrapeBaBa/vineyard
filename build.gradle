@@ -60,7 +60,7 @@ subprojects {
         mockitoVersion = '1.10.19'
         slf4jVersion = '1.7.12'
         logbackVersion = '1.1.3'
-        rxnettyVersion = '0.5.2-SNAPSHOT'
+        rxnettyVersion = '0.5.0-SNAPSHOT'
         kryoVersion = '3.0.2'
         kryoSerializerVersion = '0.33'
         fstVersion = '2.33'
