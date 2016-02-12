@@ -60,12 +60,12 @@ subprojects {
         mockitoVersion = '1.10.19'
         slf4jVersion = '1.7.12'
         logbackVersion = '1.1.3'
-        rxnettyVersion = '0.5.2-SNAPSHOT'
+        rxnettyVersion = '0.5.0-SNAPSHOT'
         kryoVersion = '3.0.2'
         kryoSerializerVersion = '0.33'
         fstVersion = '2.33'
         commonLang3Version = '3.4'
-        //ocelliVersion = '0.2.0-SNAPSHOT'
+        ocelliVersion = '0.2.0-SNAPSHOT'
         dropwizzardMetricsVersion = '3.1.2'
     }
 
@@ -74,12 +74,12 @@ subprojects {
                 "org.slf4j:slf4j-api:$slf4jVersion",
                 "org.slf4j:jcl-over-slf4j:$slf4jVersion",
                 "ch.qos.logback:logback-classic:$logbackVersion",
-                "io.reactivex:rxnetty-tcp:$rxnettyVersion",
+                "io.reactivex:rxnetty:$rxnettyVersion",
                 "com.esotericsoftware:kryo:$kryoVersion",
                 "de.javakaffee:kryo-serializers:$kryoSerializerVersion",
                 "de.ruedigermoeller:fst:$fstVersion",
                 "org.apache.commons:commons-lang3:$commonLang3Version",
-               // "com.netflix.ocelli:ocelli-rxnetty:$ocelliVersion",
+                "com.netflix.ocelli:ocelli-rxnetty:$ocelliVersion",
                 'io.dropwizard.metrics:metrics-core:3.1.2'
         )
 

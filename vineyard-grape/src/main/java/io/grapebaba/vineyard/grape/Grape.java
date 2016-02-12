@@ -17,7 +17,6 @@ package io.grapebaba.vineyard.grape;
 import io.grapebaba.vineyard.common.Service;
 import io.grapebaba.vineyard.common.codec.packet.PacketDecoder;
 import io.grapebaba.vineyard.common.codec.packet.PacketEncoder;
-import io.grapebaba.vineyard.common.loadbalancer.TcpLoadBalancer;
 import io.grapebaba.vineyard.common.StackService;
 import io.grapebaba.vineyard.common.metrics.StatFilter;
 import io.grapebaba.vineyard.grape.codec.GrapeCodecAdapter;
@@ -30,11 +29,11 @@ import io.grapebaba.vineyard.grape.protocol.grape.RequestMessage;
 import io.grapebaba.vineyard.grape.protocol.grape.ResponseMessage;
 import io.grapebaba.vineyard.grape.service.GrapeClientService;
 import io.grapebaba.vineyard.grape.service.GrapeServerService;
+import io.netty.buffer.ByteBuf;
 import io.netty.handler.timeout.IdleStateHandler;
-import io.reactivex.netty.client.Host;
-import io.reactivex.netty.client.loadbalancer.LoadBalancerFactory;
 import io.reactivex.netty.protocol.tcp.client.TcpClient;
 import io.reactivex.netty.protocol.tcp.server.TcpServer;
+import netflix.ocelli.rxnetty.protocol.tcp.TcpLoadBalancer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import rx.Observable;
@@ -42,7 +41,10 @@ import rx.functions.Function;
 
 import java.net.SocketAddress;
 
+import static netflix.ocelli.Instance.create;
+import static rx.Observable.from;
 import static rx.Observable.just;
+import static rx.Observable.never;
 
 /**
  * Grape protocol representation.
@@ -93,8 +95,11 @@ public abstract class Grape {
             SocketAddress... socketAddresses) {
         final int defaultIdleTime = 30;
 
-        final Observable<Host> hosts = Observable.from(socketAddresses).map(Host::new);
-        TcpClient<RequestMessage, ResponseMessage> client = TcpClient.newClient(LoadBalancerFactory.create(new TcpLoadBalancer<>()), hosts)
+        TcpClient<RequestMessage, ResponseMessage> client = TcpClient.newClient(
+                TcpLoadBalancer.<ByteBuf, ByteBuf>roundRobin(
+                        from(socketAddresses).flatMap(
+                                socketAddress -> just(create(socketAddress,
+                                        never())))).toConnectionProvider())
                 .addChannelHandlerLast(PacketDecoder.class.getName(),
                         PacketDecoder::new)
                 .addChannelHandlerLast(PacketEncoder.class.getName(),
